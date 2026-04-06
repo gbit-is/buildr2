@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Buildr2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./config.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Droid Build Tracker</p>
+          <h1>Buildr2</h1>
+        </div>
+        <div class="auth-panel">
+          <div id="authStatus" class="auth-status"></div>
+          <div id="googleSignIn" class="google-signin"></div>
+          <button id="guestModeButton" class="ghost-button">Continue without login</button>
+          <button id="logoutButton" class="ghost-button hidden">Log out</button>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="panel sidebar">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Workshop</p>
+              <h2>Your droids</h2>
+            </div>
+            <button id="newDroidButton" class="primary-button">Create new droid</button>
+          </div>
+
+          <form id="newDroidForm" class="new-droid-form hidden">
+            <label>
+              Droid name
+              <input id="newDroidName" name="name" type="text" placeholder="Blue Squad R2" required />
+            </label>
+            <label>
+              Droid type
+              <select id="newDroidType" name="typeId"></select>
+            </label>
+            <button type="submit" class="primary-button">Save droid</button>
+          </form>
+
+          <div id="droidList" class="droid-list"></div>
+        </section>
+
+        <section class="panel visual-panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Selector</p>
+              <h2 id="activeDroidTitle">Pick a droid to begin</h2>
+            </div>
+            <div id="sectionHint" class="section-hint">Hover and click a section to inspect parts.</div>
+          </div>
+
+          <div id="droidCanvas" class="droid-canvas empty-state">
+            Select or create a droid to load its build map.
+          </div>
+        </section>
+
+        <section class="panel detail-panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Parts</p>
+              <h2 id="sectionTitle">Choose a section</h2>
+            </div>
+            <div id="progressPill" class="progress-pill">0 / 0 printed</div>
+          </div>
+
+          <div id="sectionOptions" class="section-options"></div>
+          <div id="partsPanel" class="parts-panel empty-state">
+            Parts for the selected section will appear here.
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

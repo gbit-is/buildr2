@@ -1,0 +1,406 @@
+:root {
+  --bg: #f3f0e8;
+  --panel: rgba(255, 252, 245, 0.84);
+  --panel-border: rgba(64, 56, 40, 0.12);
+  --text: #1e1d1a;
+  --muted: #675f4f;
+  --accent: #0d7c86;
+  --accent-strong: #095f66;
+  --accent-soft: rgba(13, 124, 134, 0.12);
+  --warm: #f6a43a;
+  --success: #2f7d4b;
+  --danger: #9c3b35;
+  --shadow: 0 24px 60px rgba(42, 35, 24, 0.12);
+  --radius-lg: 28px;
+  --radius-md: 18px;
+  --radius-sm: 12px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Space Grotesk", sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(13, 124, 134, 0.14), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(246, 164, 58, 0.18), transparent 25%),
+    linear-gradient(180deg, #f7f4ee 0%, #efe9dc 100%);
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.app-shell {
+  width: min(1440px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 24px 0 32px;
+}
+
+.topbar,
+.panel,
+.part-card,
+.droid-card,
+.option-card {
+  backdrop-filter: blur(18px);
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+  padding: 24px 28px;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-lg);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.topbar h1,
+.section-heading h2 {
+  margin: 0;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.auth-panel {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  align-items: center;
+}
+
+.auth-status {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 320px minmax(360px, 1fr) 420px;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  min-height: 70vh;
+}
+
+.sidebar,
+.detail-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.section-hint,
+.progress-pill {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.progress-pill {
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.74);
+  border-radius: 999px;
+}
+
+.primary-button,
+.ghost-button,
+.pill-button {
+  border: none;
+  border-radius: 999px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: transform 140ms ease, background 140ms ease, color 140ms ease;
+}
+
+.primary-button {
+  background: var(--accent);
+  color: white;
+}
+
+.primary-button:hover,
+.ghost-button:hover,
+.pill-button:hover {
+  transform: translateY(-1px);
+}
+
+.ghost-button {
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--text);
+  border: 1px solid rgba(64, 56, 40, 0.12);
+}
+
+.pill-button {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.new-droid-form {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 18px;
+  padding: 18px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(64, 56, 40, 0.08);
+}
+
+.new-droid-form label,
+.option-group label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+input,
+select {
+  width: 100%;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(64, 56, 40, 0.18);
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--text);
+}
+
+.droid-list,
+.parts-panel,
+.section-options {
+  display: grid;
+  gap: 12px;
+}
+
+.droid-card,
+.part-card,
+.option-card,
+.category-block {
+  border: 1px solid rgba(64, 56, 40, 0.1);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.76);
+}
+
+.droid-card {
+  padding: 16px;
+  cursor: pointer;
+}
+
+.droid-card.active {
+  border-color: rgba(13, 124, 134, 0.4);
+  box-shadow: inset 0 0 0 1px rgba(13, 124, 134, 0.25);
+}
+
+.droid-card header,
+.part-card header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.droid-card h3,
+.part-card h4,
+.category-block h3 {
+  margin: 0;
+}
+
+.meta {
+  font-family: "IBM Plex Mono", monospace;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.droid-card footer {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.status-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  display: inline-block;
+  background: rgba(64, 56, 40, 0.18);
+}
+
+.status-dot.complete {
+  background: var(--success);
+}
+
+.droid-canvas {
+  min-height: 680px;
+  display: grid;
+  place-items: center;
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(251, 247, 237, 0.88)),
+    repeating-linear-gradient(
+      135deg,
+      rgba(13, 124, 134, 0.04),
+      rgba(13, 124, 134, 0.04) 16px,
+      transparent 16px,
+      transparent 32px
+    );
+  border: 1px solid rgba(64, 56, 40, 0.08);
+  padding: 20px;
+}
+
+.empty-state {
+  color: var(--muted);
+  text-align: center;
+}
+
+.droid-svg {
+  width: min(100%, 460px);
+  height: auto;
+}
+
+.droid-region {
+  fill: rgba(13, 124, 134, 0.12);
+  stroke: rgba(13, 124, 134, 0.4);
+  stroke-width: 2;
+  cursor: pointer;
+  transition: fill 150ms ease, transform 150ms ease;
+  transform-origin: center;
+}
+
+.droid-region:hover,
+.droid-region.is-active {
+  fill: rgba(246, 164, 58, 0.28);
+}
+
+.droid-region.is-active {
+  stroke: rgba(246, 164, 58, 0.9);
+}
+
+.svg-label {
+  pointer-events: none;
+  fill: var(--text);
+  font-size: 13px;
+  font-family: "IBM Plex Mono", monospace;
+}
+
+.option-card,
+.category-block {
+  padding: 16px;
+}
+
+.category-block {
+  display: grid;
+  gap: 12px;
+}
+
+.part-card {
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+}
+
+.part-notes,
+.part-files {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.part-files code {
+  display: inline-block;
+  margin-right: 6px;
+  margin-bottom: 6px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgba(13, 124, 134, 0.09);
+}
+
+.checkbox-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.95rem;
+}
+
+.checkbox-row input {
+  width: 18px;
+  height: 18px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--muted);
+}
+
+.badge.complete {
+  color: var(--success);
+}
+
+@media (max-width: 1160px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .panel {
+    min-height: auto;
+  }
+
+  .droid-canvas {
+    min-height: 520px;
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell {
+    width: min(100% - 20px, 1440px);
+    padding-top: 10px;
+  }
+
+  .topbar,
+  .panel {
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  .section-heading,
+  .topbar {
+    flex-direction: column;
+  }
+}
