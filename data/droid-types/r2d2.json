@@ -3,39 +3,44 @@
   "name": "R2-D2",
   "description": "Starter layout for tracking an astromech build.",
   "visual": {
-    "viewBox": "0 0 320 520",
-    "regions": [
+    "image": {
+      "src": "./assets/r2d2-reference.svg",
+      "width": 720,
+      "height": 1080,
+      "alt": "R2-D2 build reference"
+    },
+    "hotspots": [
       {
         "sectionId": "head",
-        "type": "path",
-        "d": "M94 112 C94 52 226 52 226 112 L226 180 L94 180 Z",
-        "label": { "x": 160, "y": 118, "text": "HEAD" }
+        "x": 160,
+        "y": 70,
+        "width": 400,
+        "height": 190,
+        "label": "HEAD"
       },
       {
         "sectionId": "body",
-        "type": "rect",
-        "x": 88,
-        "y": 180,
-        "width": 144,
-        "height": 212,
-        "rx": 18,
-        "label": { "x": 160, "y": 290, "text": "BODY" }
+        "x": 180,
+        "y": 255,
+        "width": 360,
+        "height": 440,
+        "label": "BODY"
       },
       {
         "sectionId": "outer-legs",
-        "type": "path",
-        "d": "M42 194 L94 194 L94 432 L62 484 L42 484 Z M226 194 L278 194 L278 484 L258 484 L226 432 Z",
-        "label": { "x": 160, "y": 442, "text": "OUTER LEGS" }
+        "x": 70,
+        "y": 250,
+        "width": 580,
+        "height": 700,
+        "label": "OUTER LEGS"
       },
       {
         "sectionId": "middle-leg",
-        "type": "rect",
-        "x": 134,
-        "y": 392,
-        "width": 52,
-        "height": 104,
-        "rx": 14,
-        "label": { "x": 160, "y": 450, "text": "MIDDLE LEG" }
+        "x": 285,
+        "y": 670,
+        "width": 150,
+        "height": 295,
+        "label": "MIDDLE LEG"
       }
     ]
   },

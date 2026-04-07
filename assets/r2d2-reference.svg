@@ -1,0 +1,22 @@
+<svg width="720" height="1080" viewBox="0 0 720 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="720" height="1080" rx="72" fill="#F6F1E8"/>
+  <ellipse cx="360" cy="980" rx="250" ry="40" fill="#D9D2C4"/>
+  <path d="M210 222C210 118.723 277.157 68 360 68C442.843 68 510 118.723 510 222V276H210V222Z" fill="#E8ECEF" stroke="#65727C" stroke-width="14"/>
+  <path d="M232 210C232 138.203 290.203 110 362 110C433.797 110 488 138.203 488 210V246H232V210Z" fill="#D4DBE2"/>
+  <rect x="234" y="276" width="252" height="430" rx="42" fill="#E8ECEF" stroke="#65727C" stroke-width="14"/>
+  <rect x="266" y="330" width="188" height="86" rx="18" fill="#C8D4DF"/>
+  <rect x="266" y="448" width="188" height="80" rx="18" fill="#D9E3EA"/>
+  <rect x="266" y="556" width="188" height="106" rx="18" fill="#C8D4DF"/>
+  <circle cx="360" cy="176" r="28" fill="#0D7C86"/>
+  <rect x="286" y="148" width="110" height="22" rx="11" fill="#8AA0B5"/>
+  <path d="M130 298H234V782L186 916H130V298Z" fill="#E8ECEF" stroke="#65727C" stroke-width="14"/>
+  <path d="M486 298H590V916H534L486 782V298Z" fill="#E8ECEF" stroke="#65727C" stroke-width="14"/>
+  <path d="M138 916H236L226 992H126L138 916Z" fill="#D5DDE4" stroke="#65727C" stroke-width="14"/>
+  <path d="M484 916H582L594 992H494L484 916Z" fill="#D5DDE4" stroke="#65727C" stroke-width="14"/>
+  <path d="M292 702H428V980H292V702Z" fill="#E8ECEF" stroke="#65727C" stroke-width="14"/>
+  <path d="M282 960H438L454 1010H266L282 960Z" fill="#D5DDE4" stroke="#65727C" stroke-width="14"/>
+  <path d="M242 368H478" stroke="#0D7C86" stroke-width="18" stroke-linecap="round"/>
+  <path d="M252 594H468" stroke="#F6A43A" stroke-width="18" stroke-linecap="round"/>
+  <path d="M138 410H216" stroke="#0D7C86" stroke-width="16" stroke-linecap="round"/>
+  <path d="M504 410H582" stroke="#0D7C86" stroke-width="16" stroke-linecap="round"/>
+</svg>

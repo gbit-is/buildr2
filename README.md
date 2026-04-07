@@ -20,6 +20,7 @@ Buildr2 is a lightweight website for tracking printed parts while building one o
 - `server.js`: static file server and backend API
 - `config.js`: optional Google client configuration
 - `data/droid-types/*.json`: droid type definitions
+- `assets/`: image assets used by droid definitions
 - `data/storage/workspaces.json`: saved droid workspaces, created automatically at runtime
 
 ## Run locally
@@ -95,12 +96,39 @@ Before public deployment, we should add:
 1. Create a new JSON file in `data/droid-types/`.
 2. Add an entry to `data/droid-types/index.json`.
 3. Define:
-   - `visual.viewBox`
-   - `visual.regions`
+   - `visual.image`
+   - `visual.hotspots`
    - `sections`
    - `categories.main`
    - `categories.greebles`
    - optional `options`
+
+Example image selector config:
+
+```json
+{
+  "visual": {
+    "image": {
+      "src": "./assets/r2d2-reference.svg",
+      "width": 720,
+      "height": 1080,
+      "alt": "R2-D2 build reference"
+    },
+    "hotspots": [
+      {
+        "sectionId": "head",
+        "x": 160,
+        "y": 70,
+        "width": 400,
+        "height": 190,
+        "label": "HEAD"
+      }
+    ]
+  }
+}
+```
+
+Hotspot coordinates are measured against the source image size, so you can swap in a real PNG or JPG and tune the clickable areas visually.
 
 Each part can include:
 

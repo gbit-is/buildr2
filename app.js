@@ -418,11 +418,11 @@ function renderCanvas() {
   elements.activeDroidTitle.textContent = droid.name;
   elements.sectionHint.textContent = type.description;
   elements.droidCanvas.classList.remove("empty-state");
-  elements.droidCanvas.innerHTML = buildSvgMarkup(type, state.activeSectionId);
+  elements.droidCanvas.innerHTML = buildImageMapMarkup(type, state.activeSectionId);
 
-  elements.droidCanvas.querySelectorAll(".droid-region").forEach((region) => {
-    region.addEventListener("click", async () => {
-      state.activeSectionId = region.dataset.sectionId;
+  elements.droidCanvas.querySelectorAll(".droid-hotspot").forEach((hotspot) => {
+    hotspot.addEventListener("click", async () => {
+      state.activeSectionId = hotspot.dataset.sectionId;
       await persistWorkspaceState();
       renderSectionDetails();
       updateActiveRegionState();
@@ -430,55 +430,47 @@ function renderCanvas() {
   });
 }
 
-function buildSvgMarkup(type, activeSectionId) {
-  const regions = type.visual.regions
-    .map((region) => {
-      const attrs = buildShapeAttributes(region);
-      const activeClass = region.sectionId === activeSectionId ? "is-active" : "";
-      const label = region.label
-        ? `<text class="svg-label" x="${region.label.x}" y="${region.label.y}" text-anchor="middle">${region.label.text}</text>`
-        : "";
+function buildImageMapMarkup(type, activeSectionId) {
+  const { image, hotspots } = type.visual;
+  const hotspotMarkup = hotspots
+    .map((hotspot) => {
+      const isActive = hotspot.sectionId === activeSectionId ? "is-active" : "";
+      const left = percent(hotspot.x, image.width);
+      const top = percent(hotspot.y, image.height);
+      const width = percent(hotspot.width, image.width);
+      const height = percent(hotspot.height, image.height);
+
       return `
-        <g>
-          <${region.type}
-            class="droid-region ${activeClass}"
-            data-section-id="${region.sectionId}"
-            ${attrs}
-          ></${region.type}>
-          ${label}
-        </g>
+        <button
+          type="button"
+          class="droid-hotspot ${isActive}"
+          data-section-id="${hotspot.sectionId}"
+          style="left:${left}; top:${top}; width:${width}; height:${height};"
+          aria-label="${escapeHtml(hotspot.label || hotspot.sectionId)}"
+          title="${escapeHtml(hotspot.label || hotspot.sectionId)}"
+        >
+          <span class="hotspot-label">${escapeHtml(hotspot.label || hotspot.sectionId)}</span>
+        </button>
       `;
     })
     .join("");
 
   return `
-    <svg class="droid-svg" viewBox="${type.visual.viewBox}" role="img" aria-label="${escapeHtml(type.name)} build map">
-      <defs>
-        <linearGradient id="shellGlow" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="rgba(255,255,255,0.9)" />
-          <stop offset="100%" stop-color="rgba(13,124,134,0.08)" />
-        </linearGradient>
-      </defs>
-      <rect x="58" y="36" width="204" height="460" rx="84" fill="url(#shellGlow)" opacity="0.45"></rect>
-      ${regions}
-    </svg>
+    <div class="droid-image-map" style="--image-aspect:${image.width} / ${image.height};">
+      <img class="droid-photo" src="${escapeHtml(image.src)}" alt="${escapeHtml(image.alt || type.name)}" />
+      <div class="droid-hotspots" aria-hidden="false">
+        ${hotspotMarkup}
+      </div>
+    </div>
   `;
 }
 
-function buildShapeAttributes(region) {
-  if (region.type === "rect") {
-    return `x="${region.x}" y="${region.y}" width="${region.width}" height="${region.height}" rx="${region.rx ?? 0}"`;
-  }
-
-  if (region.type === "circle") {
-    return `cx="${region.cx}" cy="${region.cy}" r="${region.r}"`;
-  }
-
-  return `d="${region.d}"`;
+function percent(value, total) {
+  return `${(value / total) * 100}%`;
 }
 
 function updateActiveRegionState() {
-  elements.droidCanvas.querySelectorAll(".droid-region").forEach((node) => {
+  elements.droidCanvas.querySelectorAll(".droid-hotspot").forEach((node) => {
     node.classList.toggle("is-active", node.dataset.sectionId === state.activeSectionId);
   });
 }
