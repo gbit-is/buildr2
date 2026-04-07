@@ -1,6 +1,6 @@
 # Buildr2
 
-Buildr2 is a lightweight static website for tracking printed parts while building one or more droids.
+Buildr2 is a lightweight website for tracking printed parts while building one or more droids.
 
 ## What it does
 
@@ -9,26 +9,54 @@ Buildr2 is a lightweight static website for tracking printed parts while buildin
 - Uses JSON files for each droid type's layout, sections, options, and parts
 - Tracks whether each part has been printed
 - Filters parts by section options such as `large printer` vs `small printer`
+- Saves guest progress in browser local storage
+- Saves signed-in progress to a backend JSON database on disk
 
 ## Project structure
 
 - `index.html`: app shell
 - `styles.css`: UI styling
-- `app.js`: app logic and local persistence
+- `app.js`: frontend logic
+- `server.js`: static file server and backend API
 - `config.js`: optional Google client configuration
 - `data/droid-types/*.json`: droid type definitions
+- `data/storage/workspaces.json`: saved droid workspaces, created automatically at runtime
 
 ## Run locally
 
-Because the app fetches JSON files, serve it with a local web server instead of opening `index.html` directly.
-
-Examples:
+Start the app from the project folder:
 
 ```bash
-python3 -m http.server 4173
+node server.js
 ```
 
-Then open `http://localhost:4173`.
+Or, if you prefer:
+
+```bash
+npm start
+```
+
+Then open:
+
+```text
+http://localhost:4173
+```
+
+## Saving behavior
+
+If you use guest mode, workspace data is saved in your browser's local storage.
+
+If you sign in with Google, workspace data is saved to:
+
+```text
+data/storage/workspaces.json
+```
+
+So:
+
+- guest mode survives refreshes in the same browser profile
+- guest mode data is lost if that browser storage is cleared
+- Google mode survives refreshes and browser storage clears because it is stored on disk by the server
 
 ## Google login
 
@@ -46,7 +74,21 @@ window.BUILDR_CONFIG = {
 };
 ```
 
-The current implementation is frontend-only. It uses Google Identity Services to identify the user and stores each user's droid data in browser local storage.
+## Important auth note
+
+The current backend stores data by profile id, but it does not yet cryptographically verify Google tokens on the server.
+
+So this version is good for:
+
+- your own machine
+- a trusted home server
+- early prototyping
+
+Before public deployment, we should add:
+
+- server-side Google token verification
+- real user sessions
+- a proper database such as Postgres or SQLite
 
 ## Adding a new droid type
 

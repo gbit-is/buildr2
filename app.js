@@ -1,4 +1,6 @@
-const STORAGE_KEY = "buildr2-state-v1";
+const LAST_PROFILE_KEY = "buildr2-last-profile";
+const LOCAL_WORKSPACE_KEY = "buildr2-guest-workspace";
+
 const state = {
   profile: null,
   catalog: [],
@@ -16,7 +18,7 @@ async function init() {
   captureElements();
   await loadCatalog();
   bindEvents();
-  loadPersistedProfile();
+  await loadPersistedProfile();
   initAuthUi();
   render();
 }
@@ -58,9 +60,9 @@ async function loadCatalog() {
 }
 
 function bindEvents() {
-  elements.guestModeButton.addEventListener("click", () => {
+  elements.guestModeButton.addEventListener("click", async () => {
     if (!state.profile) {
-      setGuestProfile();
+      await setGuestProfile();
     }
   });
 
@@ -69,6 +71,7 @@ function bindEvents() {
     state.droids = [];
     state.activeDroidId = null;
     state.activeSectionId = null;
+    localStorage.removeItem(LAST_PROFILE_KEY);
     render();
   });
 
@@ -79,9 +82,9 @@ function bindEvents() {
     }
   });
 
-  elements.newDroidForm.addEventListener("submit", (event) => {
+  elements.newDroidForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    createDroid({
+    await createDroid({
       name: elements.newDroidName.value.trim(),
       typeId: elements.newDroidType.value
     });
@@ -111,7 +114,7 @@ function initAuthUi() {
   }
 }
 
-function handleGoogleCredential(response) {
+async function handleGoogleCredential(response) {
   const payload = decodeJwt(response.credential);
   if (!payload) {
     return;
@@ -124,7 +127,8 @@ function handleGoogleCredential(response) {
     mode: "google"
   };
 
-  loadWorkspaceState();
+  localStorage.setItem(LAST_PROFILE_KEY, state.profile.id);
+  await loadWorkspaceState();
   render();
 }
 
@@ -137,7 +141,7 @@ function decodeJwt(token) {
   }
 }
 
-function setGuestProfile() {
+async function setGuestProfile() {
   state.profile = {
     id: "guest:local",
     name: "Local workshop",
@@ -145,24 +149,23 @@ function setGuestProfile() {
     mode: "guest"
   };
 
-  loadWorkspaceState();
+  localStorage.setItem(LAST_PROFILE_KEY, state.profile.id);
+  await loadWorkspaceState();
   render();
 }
 
-function loadPersistedProfile() {
-  const saved = readStorage();
-  const lastProfile = saved.lastProfileId;
+async function loadPersistedProfile() {
+  const lastProfile = localStorage.getItem(LAST_PROFILE_KEY);
   if (!lastProfile) {
     return;
   }
 
   if (lastProfile === "guest:local") {
-    setGuestProfile();
-    return;
+    await setGuestProfile();
   }
 }
 
-function createDroid({ name, typeId }) {
+async function createDroid({ name, typeId }) {
   if (!state.profile || !name || !typeId) {
     return;
   }
@@ -173,7 +176,6 @@ function createDroid({ name, typeId }) {
     id: crypto.randomUUID(),
     name,
     typeId,
-    sectionSelections: {},
     optionSelections: buildDefaultOptions(type),
     printedParts: {}
   };
@@ -181,7 +183,7 @@ function createDroid({ name, typeId }) {
   state.droids.unshift(droid);
   state.activeDroidId = droid.id;
   state.activeSectionId = firstSection;
-  persistWorkspaceState();
+  await persistWorkspaceState();
 
   elements.newDroidForm.reset();
   elements.newDroidForm.classList.add("hidden");
@@ -205,48 +207,81 @@ function buildDefaultOptions(type) {
   return selections;
 }
 
-function loadWorkspaceState() {
-  const saved = readStorage();
-  const workspace = saved.workspaces?.[state.profile.id] ?? {
-    droids: [],
-    activeDroidId: null,
-    activeSectionId: null
-  };
-
-  state.droids = workspace.droids;
-  state.activeDroidId = workspace.activeDroidId;
-  state.activeSectionId = workspace.activeSectionId;
-  normalizeActiveSelection();
-}
-
-function persistWorkspaceState() {
+async function loadWorkspaceState() {
   if (!state.profile) {
     return;
   }
 
-  const saved = readStorage();
-  const nextState = {
-    ...saved,
-    lastProfileId: state.profile.id,
-    workspaces: {
-      ...(saved.workspaces ?? {}),
-      [state.profile.id]: {
-        droids: state.droids,
-        activeDroidId: state.activeDroidId,
-        activeSectionId: state.activeSectionId
-      }
-    }
-  };
-
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(nextState));
+  const workspace =
+    state.profile.mode === "guest"
+      ? readLocalWorkspace()
+      : await fetchWorkspace(state.profile.id);
+  state.droids = workspace.droids ?? [];
+  state.activeDroidId = workspace.activeDroidId ?? null;
+  state.activeSectionId = workspace.activeSectionId ?? null;
+  normalizeActiveSelection();
 }
 
-function readStorage() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) ?? {};
-  } catch {
-    return {};
+async function persistWorkspaceState() {
+  if (!state.profile) {
+    return;
   }
+
+  const workspace = {
+    droids: state.droids,
+    activeDroidId: state.activeDroidId,
+    activeSectionId: state.activeSectionId
+  };
+
+  if (state.profile.mode === "guest") {
+    writeLocalWorkspace(workspace);
+    return;
+  }
+
+  await saveWorkspace(state.profile.id, workspace);
+}
+
+async function fetchWorkspace(profileId) {
+  const response = await fetch(`/api/workspaces/${encodeURIComponent(profileId)}`);
+  if (!response.ok) {
+    throw new Error(`Failed to load workspace for ${profileId}`);
+  }
+
+  return response.json();
+}
+
+async function saveWorkspace(profileId, workspace) {
+  const response = await fetch(`/api/workspaces/${encodeURIComponent(profileId)}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(workspace)
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to save workspace for ${profileId}`);
+  }
+}
+
+function readLocalWorkspace() {
+  try {
+    return JSON.parse(localStorage.getItem(LOCAL_WORKSPACE_KEY)) ?? emptyWorkspace();
+  } catch {
+    return emptyWorkspace();
+  }
+}
+
+function writeLocalWorkspace(workspace) {
+  localStorage.setItem(LOCAL_WORKSPACE_KEY, JSON.stringify(workspace));
+}
+
+function emptyWorkspace() {
+  return {
+    droids: [],
+    activeDroidId: null,
+    activeSectionId: null
+  };
 }
 
 function render() {
@@ -327,26 +362,26 @@ function renderDroidList() {
     .join("");
 
   elements.droidList.querySelectorAll("[data-open-droid]").forEach((button) => {
-    button.addEventListener("click", (event) => {
+    button.addEventListener("click", async (event) => {
       const droidId = event.currentTarget.dataset.openDroid;
       state.activeDroidId = droidId;
       normalizeActiveSelection();
-      persistWorkspaceState();
+      await persistWorkspaceState();
       render();
     });
   });
 
   elements.droidList.querySelectorAll("[data-droid-id]").forEach((card) => {
-    card.addEventListener("click", () => {
+    card.addEventListener("click", async () => {
       state.activeDroidId = card.dataset.droidId;
       normalizeActiveSelection();
-      persistWorkspaceState();
+      await persistWorkspaceState();
       render();
     });
   });
 
   elements.droidList.querySelectorAll("[data-delete-droid]").forEach((button) => {
-    button.addEventListener("click", (event) => {
+    button.addEventListener("click", async (event) => {
       event.stopPropagation();
       const droidId = event.currentTarget.dataset.deleteDroid;
       state.droids = state.droids.filter((droid) => droid.id !== droidId);
@@ -356,7 +391,7 @@ function renderDroidList() {
       }
 
       normalizeActiveSelection();
-      persistWorkspaceState();
+      await persistWorkspaceState();
       render();
     });
   });
@@ -386,9 +421,9 @@ function renderCanvas() {
   elements.droidCanvas.innerHTML = buildSvgMarkup(type, state.activeSectionId);
 
   elements.droidCanvas.querySelectorAll(".droid-region").forEach((region) => {
-    region.addEventListener("click", () => {
+    region.addEventListener("click", async () => {
       state.activeSectionId = region.dataset.sectionId;
-      persistWorkspaceState();
+      await persistWorkspaceState();
       renderSectionDetails();
       updateActiveRegionState();
     });
@@ -508,11 +543,11 @@ function renderSectionOptions(section, selectedOptions) {
     .join("");
 
   elements.sectionOptions.querySelectorAll("[data-option-id]").forEach((select) => {
-    select.addEventListener("change", (event) => {
+    select.addEventListener("change", async (event) => {
       const activeDroid = getActiveDroid();
       const optionId = event.currentTarget.dataset.optionId;
       activeDroid.optionSelections[section.id][optionId] = event.currentTarget.value;
-      persistWorkspaceState();
+      await persistWorkspaceState();
       renderSectionDetails();
       renderDroidList();
     });
@@ -570,10 +605,10 @@ function renderParts(section, selectedOptions, droid) {
   elements.partsPanel.innerHTML = html;
 
   elements.partsPanel.querySelectorAll("[data-part-id]").forEach((checkbox) => {
-    checkbox.addEventListener("change", (event) => {
+    checkbox.addEventListener("change", async (event) => {
       const partId = event.currentTarget.dataset.partId;
       droid.printedParts[partId] = event.currentTarget.checked;
-      persistWorkspaceState();
+      await persistWorkspaceState();
       renderSectionDetails();
       renderDroidList();
     });
