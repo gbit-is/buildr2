@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Buildr2 Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./admin.css" />
+    <script src="./config.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script type="module" src="./admin.js"></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Config Editor</p>
+          <h1>Buildr2 Admin</h1>
+        </div>
+        <div class="auth-panel">
+          <div id="adminStatus" class="auth-status"></div>
+          <div id="adminGoogleSignIn" class="google-signin"></div>
+          <button id="adminLogoutButton" class="ghost-button hidden">Log out</button>
+        </div>
+      </header>
+
+      <main class="admin-layout">
+        <section class="panel admin-sidebar">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Configs</p>
+              <h2>Droid Types</h2>
+            </div>
+          </div>
+
+          <div id="adminNotice" class="empty-state">
+            Sign in with an allowed Google account to edit droid configs.
+          </div>
+
+          <div id="typePickerPanel" class="hidden">
+            <label>
+              Droid type
+              <select id="typePicker"></select>
+            </label>
+            <div id="typeMeta" class="meta-block"></div>
+          </div>
+
+          <div id="sectionSummary" class="admin-list"></div>
+        </section>
+
+        <section class="panel admin-main">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Table Editor</p>
+              <h2>Manage Parts</h2>
+            </div>
+            <button id="addPartButton" class="pill-button hidden">Add row</button>
+          </div>
+
+          <div id="tableTools" class="bulk-tools hidden">
+            <label>
+              Section
+              <select id="tableSection"></select>
+            </label>
+            <div id="tableVariantPanel" class="variant-panel hidden">
+              <label>
+                Variant option
+                <select id="tableVariantOption"></select>
+              </label>
+              <label>
+                Variant choice
+                <select id="tableVariantChoice"></select>
+              </label>
+            </div>
+            <label>
+              Category
+              <select id="tableCategory">
+                <option value="main">Main</option>
+                <option value="greebles">Greebles</option>
+              </select>
+            </label>
+            <div id="partsTablePanel" class="parts-table-panel"></div>
+          </div>
+
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Import</p>
+              <h2>Bulk Add Parts</h2>
+            </div>
+            <button id="appendPartsButton" class="pill-button hidden">Append to config</button>
+          </div>
+
+          <div id="bulkTools" class="bulk-tools hidden">
+            <label>
+              Section
+              <select id="bulkSection"></select>
+            </label>
+            <div id="bulkVariantPanel" class="variant-panel hidden">
+              <label>
+                Variant option
+                <select id="bulkVariantOption"></select>
+              </label>
+              <label>
+                Variant choice
+                <select id="bulkVariantChoice"></select>
+              </label>
+            </div>
+            <label>
+              Category
+              <select id="bulkCategory">
+                <option value="main">Main</option>
+                <option value="greebles">Greebles</option>
+              </select>
+            </label>
+            <label>
+              Paste parts
+              <textarea
+                id="bulkParts"
+                rows="10"
+                placeholder="One part per line. Format: Name | file-a.stl, file-b.stl | Optional notes"
+              ></textarea>
+            </label>
+            <div class="meta-block">
+              Lines are converted into part objects automatically. IDs are generated from the part name. If a section has options like printer size, choose a variant above to apply matching `requirements` to the imported parts.
+            </div>
+          </div>
+
+          <div class="section-heading editor-heading">
+            <div>
+              <p class="eyebrow">Raw JSON</p>
+              <h2>Config Editor</h2>
+            </div>
+            <button id="saveConfigButton" class="primary-button hidden">Save config</button>
+          </div>
+
+          <textarea
+            id="configEditor"
+            class="config-editor"
+            spellcheck="false"
+            placeholder="Select a droid type to load its config."
+            disabled
+          ></textarea>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

@@ -1,5 +1,6 @@
 const LAST_PROFILE_KEY = "buildr2-last-profile";
 const LOCAL_WORKSPACE_KEY = "buildr2-guest-workspace";
+const GOOGLE_PROFILE_KEY = "buildr2-google-profile";
 
 const state = {
   profile: null,
@@ -72,6 +73,7 @@ function bindEvents() {
     state.activeDroidId = null;
     state.activeSectionId = null;
     localStorage.removeItem(LAST_PROFILE_KEY);
+    localStorage.removeItem(GOOGLE_PROFILE_KEY);
     render();
   });
 
@@ -128,6 +130,7 @@ async function handleGoogleCredential(response) {
   };
 
   localStorage.setItem(LAST_PROFILE_KEY, state.profile.id);
+  localStorage.setItem(GOOGLE_PROFILE_KEY, JSON.stringify(state.profile));
   await loadWorkspaceState();
   render();
 }
@@ -162,6 +165,20 @@ async function loadPersistedProfile() {
 
   if (lastProfile === "guest:local") {
     await setGuestProfile();
+    return;
+  }
+
+  if (lastProfile.startsWith("google:")) {
+    const savedProfile = readStoredGoogleProfile();
+    if (savedProfile?.id === lastProfile) {
+      state.profile = savedProfile;
+      await loadWorkspaceState();
+      render();
+      return;
+    }
+
+    localStorage.removeItem(LAST_PROFILE_KEY);
+    localStorage.removeItem(GOOGLE_PROFILE_KEY);
   }
 }
 
@@ -274,6 +291,19 @@ function readLocalWorkspace() {
 
 function writeLocalWorkspace(workspace) {
   localStorage.setItem(LOCAL_WORKSPACE_KEY, JSON.stringify(workspace));
+}
+
+function readStoredGoogleProfile() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(GOOGLE_PROFILE_KEY));
+    if (!saved || saved.mode !== "google" || !saved.id) {
+      return null;
+    }
+
+    return saved;
+  } catch {
+    return null;
+  }
 }
 
 function emptyWorkspace() {
@@ -427,6 +457,18 @@ function renderCanvas() {
       renderSectionDetails();
       updateActiveRegionState();
     });
+
+    hotspot.addEventListener("keydown", async (event) => {
+      if (event.key !== "Enter" && event.key !== " ") {
+        return;
+      }
+
+      event.preventDefault();
+      state.activeSectionId = hotspot.dataset.sectionId;
+      await persistWorkspaceState();
+      renderSectionDetails();
+      updateActiveRegionState();
+    });
   });
 }
 
@@ -434,39 +476,143 @@ function buildImageMapMarkup(type, activeSectionId) {
   const { image, hotspots } = type.visual;
   const hotspotMarkup = hotspots
     .map((hotspot) => {
-      const isActive = hotspot.sectionId === activeSectionId ? "is-active" : "";
-      const left = percent(hotspot.x, image.width);
-      const top = percent(hotspot.y, image.height);
-      const width = percent(hotspot.width, image.width);
-      const height = percent(hotspot.height, image.height);
-
-      return `
-        <button
-          type="button"
-          class="droid-hotspot ${isActive}"
-          data-section-id="${hotspot.sectionId}"
-          style="left:${left}; top:${top}; width:${width}; height:${height};"
-          aria-label="${escapeHtml(hotspot.label || hotspot.sectionId)}"
-          title="${escapeHtml(hotspot.label || hotspot.sectionId)}"
-        >
-          <span class="hotspot-label">${escapeHtml(hotspot.label || hotspot.sectionId)}</span>
-        </button>
-      `;
+      return buildHotspotShapeMarkup(hotspot, activeSectionId);
     })
     .join("");
 
   return `
     <div class="droid-image-map" style="--image-aspect:${image.width} / ${image.height};">
       <img class="droid-photo" src="${escapeHtml(image.src)}" alt="${escapeHtml(image.alt || type.name)}" />
-      <div class="droid-hotspots" aria-hidden="false">
+      <svg
+        class="droid-hotspots"
+        viewBox="0 0 ${image.width} ${image.height}"
+        aria-label="${escapeHtml(type.name)} selector"
+        role="group"
+      >
         ${hotspotMarkup}
-      </div>
+      </svg>
     </div>
   `;
 }
 
-function percent(value, total) {
-  return `${(value / total) * 100}%`;
+function buildHotspotShapeMarkup(hotspot, activeSectionId) {
+  const isActive = hotspot.sectionId === activeSectionId ? "is-active" : "";
+  const label = escapeHtml(hotspot.label || hotspot.sectionId);
+  const shape = normalizeHotspotShape(hotspot);
+  const shapeMarkup = renderHotspotShape(shape);
+  const labelMarkup = renderHotspotLabel(shape, label);
+
+  return `
+    <g
+      class="droid-hotspot ${isActive}"
+      data-section-id="${hotspot.sectionId}"
+      role="button"
+      tabindex="0"
+      aria-label="${label}"
+    >
+      <title>${label}</title>
+      ${shapeMarkup}
+      ${labelMarkup}
+    </g>
+  `;
+}
+
+function normalizeHotspotShape(hotspot) {
+  if (hotspot.shape && hotspot.coords) {
+    if (hotspot.shape === "rect") {
+      const [x1, y1, x2, y2] = hotspot.coords;
+      const left = Math.min(x1, x2);
+      const top = Math.min(y1, y2);
+      const right = Math.max(x1, x2);
+      const bottom = Math.max(y1, y2);
+      return {
+        type: "rect",
+        x: left,
+        y: top,
+        width: right - left,
+        height: bottom - top
+      };
+    }
+
+    if (hotspot.shape === "circle") {
+      const [cx, cy, r] = hotspot.coords;
+      return {
+        type: "circle",
+        cx,
+        cy,
+        r
+      };
+    }
+
+    if (hotspot.shape === "poly") {
+      return {
+        type: "poly",
+        points: hotspot.coords
+      };
+    }
+  }
+
+  return {
+    type: "rect",
+    x: hotspot.x,
+    y: hotspot.y,
+    width: hotspot.width,
+    height: hotspot.height
+  };
+}
+
+function renderHotspotShape(shape) {
+  if (shape.type === "circle") {
+    return `<circle class="hotspot-shape" cx="${shape.cx}" cy="${shape.cy}" r="${shape.r}"></circle>`;
+  }
+
+  if (shape.type === "poly") {
+    return `<polygon class="hotspot-shape" points="${shape.points.join(" ")}"></polygon>`;
+  }
+
+  return `<rect class="hotspot-shape" x="${shape.x}" y="${shape.y}" width="${shape.width}" height="${shape.height}" rx="24"></rect>`;
+}
+
+function renderHotspotLabel(shape, label) {
+  const center = getShapeCenter(shape);
+  const labelWidth = Math.max(108, label.length * 8 + 22);
+  return `
+    <g class="hotspot-label-group" aria-hidden="true">
+      <rect class="hotspot-label-bg" x="${center.x - labelWidth / 2}" y="${center.y - 16}" width="${labelWidth}" height="32" rx="16"></rect>
+      <text class="hotspot-label" x="${center.x}" y="${center.y + 4}" text-anchor="middle">${label}</text>
+    </g>
+  `;
+}
+
+function getShapeCenter(shape) {
+  if (shape.type === "circle") {
+    return { x: shape.cx, y: shape.cy };
+  }
+
+  if (shape.type === "poly") {
+    const pairs = [];
+    for (let index = 0; index < shape.points.length; index += 2) {
+      pairs.push({ x: shape.points[index], y: shape.points[index + 1] });
+    }
+
+    const total = pairs.reduce(
+      (accumulator, point) => ({
+        x: accumulator.x + point.x,
+        y: accumulator.y + point.y
+      }),
+      { x: 0, y: 0 }
+    );
+
+    return {
+      x: total.x / pairs.length,
+      y: total.y / pairs.length
+    };
+  }
+
+  return {
+    x: shape.x + shape.width / 2,
+    y: shape.y + shape.height / 2
+  };
 }
 
 function updateActiveRegionState() {

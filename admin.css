@@ -1,0 +1,135 @@
+.admin-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.admin-sidebar,
+.admin-main {
+  min-height: 75vh;
+}
+
+.admin-main,
+.admin-sidebar,
+.bulk-tools {
+  display: grid;
+  gap: 16px;
+}
+
+.parts-table-panel {
+  overflow: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(64, 56, 40, 0.08);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.parts-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 860px;
+}
+
+.parts-table th,
+.parts-table td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(64, 56, 40, 0.08);
+  text-align: left;
+  vertical-align: top;
+}
+
+.parts-table th {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  background: rgba(243, 240, 232, 0.88);
+}
+
+.parts-table td input,
+.parts-table td textarea {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(64, 56, 40, 0.12);
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--text);
+}
+
+.parts-table td textarea {
+  min-height: 72px;
+  resize: vertical;
+}
+
+.row-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.variant-chip {
+  display: inline-flex;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: rgba(13, 124, 134, 0.1);
+  color: var(--accent-strong);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.variant-panel {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.meta-block {
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--muted);
+  border: 1px solid rgba(64, 56, 40, 0.08);
+  font-size: 0.92rem;
+}
+
+.admin-list {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-list article {
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(64, 56, 40, 0.08);
+}
+
+.config-editor,
+.bulk-tools textarea {
+  width: 100%;
+  min-height: 420px;
+  border-radius: 20px;
+  border: 1px solid rgba(64, 56, 40, 0.14);
+  padding: 18px;
+  background: rgba(24, 28, 31, 0.96);
+  color: #f7f0df;
+  font: 14px/1.5 "IBM Plex Mono", monospace;
+  resize: vertical;
+}
+
+.editor-heading {
+  margin-top: 12px;
+}
+
+@media (max-width: 1080px) {
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .variant-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .parts-table {
+    min-width: 720px;
+  }
+}

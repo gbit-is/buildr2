@@ -4,42 +4,46 @@
   "description": "Starter layout for tracking an astromech build.",
   "visual": {
     "image": {
-      "src": "./assets/r2d2-reference.svg",
-      "width": 720,
-      "height": 1080,
+      "src": "./assets/r2d2/r2d2-reference.svg",
+      "width": 311,
+      "height": 513,
       "alt": "R2-D2 build reference"
     },
     "hotspots": [
       {
         "sectionId": "head",
-        "x": 160,
-        "y": 70,
-        "width": 400,
-        "height": 190,
+        "shape": "rect",
+        "coords": [270, 1, 56, 141],
         "label": "HEAD"
       },
       {
         "sectionId": "body",
-        "x": 180,
-        "y": 255,
-        "width": 360,
-        "height": 440,
+        "shape": "rect",
+        "coords": [67, 147, 260, 379],
         "label": "BODY"
       },
       {
-        "sectionId": "outer-legs",
-        "x": 70,
-        "y": 250,
-        "width": 580,
-        "height": 700,
-        "label": "OUTER LEGS"
+        "sectionId": "left-leg",
+        "shape": "rect",
+        "coords": [1, 143, 60, 513],
+        "label": "LEFT LEG"
+      },
+      {
+        "sectionId": "right-leg",
+        "shape": "rect",
+        "coords": [305, 147, 272, 507],
+        "label": "RIGHT LEG"
+      },
+      {
+        "sectionId": "skirt",
+        "shape": "rect",
+        "coords": [86, 382, 235, 410],
+        "label": "SKIRT"
       },
       {
         "sectionId": "middle-leg",
-        "x": 285,
-        "y": 670,
-        "width": 150,
-        "height": 295,
+        "shape": "rect",
+        "coords": [119, 511, 207, 412],
         "label": "MIDDLE LEG"
       }
     ]
@@ -47,7 +51,7 @@
   "sections": [
     {
       "id": "head",
-      "label": "Head",
+      "label": "Dome",
       "categories": {
         "main": [
           {
@@ -132,28 +136,61 @@
       }
     },
     {
-      "id": "outer-legs",
-      "label": "Outer Legs",
+      "id": "left-leg",
+      "label": "Left Leg",
       "categories": {
         "main": [
           {
-            "id": "outer-leg-shells",
-            "name": "Outer leg shells",
-            "files": ["legs/outer-left.stl", "legs/outer-right.stl"]
+            "id": "left-leg-shell",
+            "name": "Left leg shell",
+            "files": ["legs/outer-left.stl"]
           },
           {
-            "id": "foot-shells",
-            "name": "Foot shells",
-            "files": ["legs/foot-left.stl", "legs/foot-right.stl"]
+            "id": "left-foot-shell",
+            "name": "Left foot shell",
+            "files": ["legs/foot-left.stl"]
           }
         ],
         "greebles": [
           {
-            "id": "ankle-details",
-            "name": "Ankle detail caps",
-            "files": ["legs/ankle-details.stl"]
+            "id": "left-ankle-details",
+            "name": "Left ankle detail caps",
+            "files": ["legs/ankle-details-left.stl"]
           }
         ]
+      }
+    },
+    {
+      "id": "right-leg",
+      "label": "Right Leg",
+      "categories": {
+        "main": [
+          {
+            "id": "right-leg-shell",
+            "name": "Right leg shell",
+            "files": ["legs/outer-right.stl"]
+          },
+          {
+            "id": "right-foot-shell",
+            "name": "Right foot shell",
+            "files": ["legs/foot-right.stl"]
+          }
+        ],
+        "greebles": [
+          {
+            "id": "right-ankle-details",
+            "name": "Right ankle detail caps",
+            "files": ["legs/ankle-details-right.stl"]
+          }
+        ]
+      }
+    },
+    {
+      "id": "skirt",
+      "label": "Skirt",
+      "categories": {
+        "main": [],
+        "greebles": []
       }
     },
     {
