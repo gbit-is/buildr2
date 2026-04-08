@@ -149,7 +149,7 @@
                 "simple"
               ],
               "printer_size": [
-                "large"
+                "small"
               ]
             }
           },
@@ -164,7 +164,7 @@
                 "simple"
               ],
               "printer_size": [
-                "large"
+                "small"
               ]
             }
           },
@@ -179,7 +179,7 @@
                 "simple"
               ],
               "printer_size": [
-                "large"
+                "small"
               ]
             }
           },
@@ -194,7 +194,7 @@
                 "simple"
               ],
               "printer_size": [
-                "large"
+                "small"
               ]
             }
           },
@@ -209,7 +209,7 @@
                 "simple"
               ],
               "printer_size": [
-                "large"
+                "small"
               ]
             }
           },
@@ -224,7 +224,7 @@
                 "simple"
               ],
               "printer_size": [
-                "large"
+                "small"
               ]
             }
           },
@@ -239,7 +239,7 @@
                 "simple"
               ],
               "printer_size": [
-                "large"
+                "small"
               ]
             }
           },
@@ -254,7 +254,7 @@
                 "simple"
               ],
               "printer_size": [
-                "large"
+                "small"
               ]
             }
           },
@@ -269,7 +269,7 @@
                 "simple"
               ],
               "printer_size": [
-                "large"
+                "small"
               ]
             }
           },
@@ -284,7 +284,7 @@
                 "simple"
               ],
               "printer_size": [
-                "large"
+                "small"
               ]
             }
           },
@@ -299,7 +299,7 @@
                 "simple"
               ],
               "printer_size": [
-                "large"
+                "small"
               ]
             }
           },
@@ -314,7 +314,7 @@
                 "simple"
               ],
               "printer_size": [
-                "large"
+                "small"
               ]
             }
           },
@@ -329,7 +329,7 @@
                 "simple"
               ],
               "printer_size": [
-                "large"
+                "small"
               ]
             }
           },
@@ -344,7 +344,7 @@
                 "simple"
               ],
               "printer_size": [
-                "large"
+                "small"
               ]
             }
           },
@@ -359,7 +359,7 @@
                 "simple"
               ],
               "printer_size": [
-                "large"
+                "small"
               ]
             },
             "quantity": 5
@@ -375,12 +375,555 @@
                 "simple"
               ],
               "printer_size": [
+                "small"
+              ]
+            }
+          },
+          {
+            "id": "mk4-single-dome",
+            "name": "Mk4 Single Dome",
+            "files": [
+              "MK4 Single Dome.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
                 "large"
               ]
             }
           }
         ],
-        "greebles": []
+        "greebles": [
+          {
+            "id": "singledomeupperholobracket",
+            "name": "Single dome upper holo bracket",
+            "files": [
+              "SingleDomeUpperHoloBracket.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "large"
+              ]
+            }
+          },
+          {
+            "id": "upperholoframe",
+            "name": "Upper holo frame",
+            "files": [
+              "UpperHoloFrame.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "large"
+              ]
+            }
+          },
+          {
+            "id": "upperholoframerear",
+            "name": "Upper holo frame rear",
+            "files": [
+              "UpperHoloFrameRear.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "large"
+              ]
+            }
+          },
+          {
+            "id": "button-x2",
+            "name": "Button x2",
+            "files": [
+              "Buttonx2.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "large"
+              ]
+            },
+            "quantity": 2
+          },
+          {
+            "id": "holo-frame-a",
+            "name": "Holo frame a",
+            "files": [
+              "Holos/HoloFrameA.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "large"
+              ]
+            }
+          },
+          {
+            "id": "holo-frame-a-2",
+            "name": "Holo frame a-2",
+            "files": [
+              "Holos/HoloFrameA2.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "large"
+              ]
+            }
+          },
+          {
+            "id": "main-holo-a",
+            "name": "Main-holo a",
+            "files": [
+              "Holos/MainHoloA.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "large"
+              ]
+            }
+          },
+          {
+            "id": "large-logic-bracket",
+            "name": "Large logic bracket",
+            "files": [
+              "LargeLogic/LargeLogicBracket.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "large"
+              ]
+            }
+          },
+          {
+            "id": "large-logic-inner",
+            "name": "Large logic inner",
+            "files": [
+              "LargeLogic/LargeLogicInner.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "large"
+              ]
+            }
+          },
+          {
+            "id": "large-logic-outer",
+            "name": "Large logic outer",
+            "files": [
+              "LargeLogic/LargeLogicOuter.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "large"
+              ]
+            }
+          },
+          {
+            "id": "front-psi",
+            "name": "Front psi",
+            "files": [
+              "PSIs/FrontPSI.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "large"
+              ]
+            }
+          },
+          {
+            "id": "front-psi-ring",
+            "name": "Front psi ring",
+            "files": [
+              "PSIs/FrontPSIRing.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "large"
+              ]
+            }
+          },
+          {
+            "id": "rear-psi",
+            "name": "Rear psi",
+            "files": [
+              "PSIs/RearPSI.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "large"
+              ]
+            }
+          },
+          {
+            "id": "rear-psi-ring",
+            "name": "Rear psi ring",
+            "files": [
+              "PSIs/RearPSIRing.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "large"
+              ]
+            }
+          },
+          {
+            "id": "rada-reye",
+            "name": "Rada reye",
+            "files": [
+              "RadarEye/RadarEye.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "large"
+              ]
+            }
+          },
+          {
+            "id": "rear-logic-bracket",
+            "name": "Rear logic bracket",
+            "files": [
+              "Small Logic/RearLogicBracket.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "large"
+              ]
+            }
+          },
+          {
+            "id": "rear-logic-frame",
+            "name": "Rear logic frame",
+            "files": [
+              "Small Logic/RearLogicFrame.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "large"
+              ]
+            }
+          },
+          {
+            "id": "small-logic-light-low",
+            "name": "Small logic light low",
+            "files": [
+              "Small Logic/SmallLogicLightLow.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "large"
+              ]
+            }
+          },
+          {
+            "id": "small-logic-light-up",
+            "name": "Small logic light up",
+            "files": [
+              "Small Logic/SmallLogicLightUp.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "large"
+              ]
+            }
+          },
+          {
+            "id": "button-x2",
+            "name": "Button x2",
+            "files": [
+              "Buttonx2.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "small"
+              ]
+            },
+            "quantity": 2
+          },
+          {
+            "id": "holo-frame-a",
+            "name": "Holo frame a",
+            "files": [
+              "Holos/HoloFrameA.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "small"
+              ]
+            }
+          },
+          {
+            "id": "holo-frame-a-2",
+            "name": "Holo frame a-2",
+            "files": [
+              "Holos/HoloFrameA2.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "small"
+              ]
+            }
+          },
+          {
+            "id": "main-holo-a",
+            "name": "Main-holo a",
+            "files": [
+              "Holos/MainHoloA.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "small"
+              ]
+            }
+          },
+          {
+            "id": "large-logic-bracket",
+            "name": "Large logic bracket",
+            "files": [
+              "LargeLogic/LargeLogicBracket.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "small"
+              ]
+            }
+          },
+          {
+            "id": "large-logic-inner",
+            "name": "Large logic inner",
+            "files": [
+              "LargeLogic/LargeLogicInner.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "small"
+              ]
+            }
+          },
+          {
+            "id": "large-logic-outer",
+            "name": "Large logic outer",
+            "files": [
+              "LargeLogic/LargeLogicOuter.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "small"
+              ]
+            }
+          },
+          {
+            "id": "front-psi",
+            "name": "Front psi",
+            "files": [
+              "PSIs/FrontPSI.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "small"
+              ]
+            }
+          },
+          {
+            "id": "front-psi-ring",
+            "name": "Front psi ring",
+            "files": [
+              "PSIs/FrontPSIRing.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "small"
+              ]
+            }
+          },
+          {
+            "id": "rear-psi",
+            "name": "Rear psi",
+            "files": [
+              "PSIs/RearPSI.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "small"
+              ]
+            }
+          },
+          {
+            "id": "rear-psi-ring",
+            "name": "Rear psi ring",
+            "files": [
+              "PSIs/RearPSIRing.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "small"
+              ]
+            }
+          },
+          {
+            "id": "rada-reye",
+            "name": "Rada reye",
+            "files": [
+              "RadarEye/RadarEye.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "small"
+              ]
+            }
+          },
+          {
+            "id": "rear-logic-bracket",
+            "name": "Rear logic bracket",
+            "files": [
+              "Small Logic/RearLogicBracket.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "small"
+              ]
+            }
+          },
+          {
+            "id": "rear-logic-frame",
+            "name": "Rear logic frame",
+            "files": [
+              "Small Logic/RearLogicFrame.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "small"
+              ]
+            }
+          },
+          {
+            "id": "small-logic-light-low",
+            "name": "Small logic light low",
+            "files": [
+              "Small Logic/SmallLogicLightLow.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "small"
+              ]
+            }
+          },
+          {
+            "id": "small-logic-light-up",
+            "name": "Small logic light up",
+            "files": [
+              "Small Logic/SmallLogicLightUp.stl"
+            ],
+            "requirements": {
+              "build_style": [
+                "simple"
+              ],
+              "printer_size": [
+                "small"
+              ]
+            }
+          }
+        ]
       }
     },
     {
