@@ -93,14 +93,16 @@ The admin page lets you:
 Bulk import format:
 
 ```text
-Part Name | file-a.stl, file-b.stl | Optional notes
+Part Name | file-a.stl, file-b.stl | Optional notes | Optional quantity
 ```
 
-Only the part name is required. Files and notes are optional.
+Only the part name is required. Files, notes, and quantity are optional.
 
 If the selected section has options, the admin importer shows a variant picker and automatically writes the matching `requirements` object onto the imported parts.
 
 The parts table uses the same section/category/variant idea, so you can switch to a section like `Body`, choose `printer_size = small`, and then add or edit only the rows relevant to that variant while still seeing shared rows.
+
+The parts table also lets you edit `Qty` directly. If quantity is `1`, the field is treated as the default and does not need to be stored explicitly in JSON.
 
 ## STL helper script
 
@@ -128,6 +130,27 @@ python3 scripts/stl_to_parts.py /path/to/stl/folder --flat
 
 - `--base` makes emitted paths relative to a different root
 - `--flat` emits only filenames instead of nested paths
+
+## Tree validation script
+
+To check that every `.stl` listed in `file_structure.tree` appears somewhere in a droid config:
+
+```bash
+python3 scripts/validate_tree_against_config.py file_structure.tree data/droid-types/r2d2.json
+```
+
+The script:
+
+- parses the tree file into relative `.stl` paths
+- extracts every `.stl` path from the JSON config
+- prints which files are missing from the config
+- exits with status `1` if anything is missing
+
+You can also print matching entries:
+
+```bash
+python3 scripts/validate_tree_against_config.py file_structure.tree data/droid-types/r2d2.json --show-present
+```
 
 ## Saving behavior
 
@@ -236,6 +259,7 @@ Each part can include:
   "id": "body-core-large",
   "name": "Body core shell",
   "files": ["body/large/body-core.stl"],
+  "quantity": 2,
   "requirements": {
     "printer_size": ["large"]
   }
@@ -243,3 +267,5 @@ Each part can include:
 ```
 
 This lets one section expose different files based on selections such as printer size.
+
+If `quantity` is omitted, Buildr2 assumes `1`. When `quantity` is greater than `1`, the user UI shows one checkbox per required copy and progress counts all copies.

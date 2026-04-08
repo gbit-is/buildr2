@@ -69,13 +69,9 @@
               <select id="tableSection"></select>
             </label>
             <div id="tableVariantPanel" class="variant-panel hidden">
-              <label>
-                Variant option
-                <select id="tableVariantOption"></select>
-              </label>
               <div>
-                <div class="variant-label">Variant choice</div>
-                <div id="tableVariantChoiceList" class="variant-choice-list"></div>
+                <div class="variant-label">Variant filters</div>
+                <div id="tableVariantGroups" class="variant-groups"></div>
               </div>
             </div>
             <label>
@@ -102,13 +98,9 @@
               <select id="bulkSection"></select>
             </label>
             <div id="bulkVariantPanel" class="variant-panel hidden">
-              <label>
-                Variant option
-                <select id="bulkVariantOption"></select>
-              </label>
               <div>
-                <div class="variant-label">Variant choice</div>
-                <div id="bulkVariantChoiceList" class="variant-choice-list"></div>
+                <div class="variant-label">Variant requirements</div>
+                <div id="bulkVariantGroups" class="variant-groups"></div>
               </div>
             </div>
             <label>
@@ -123,11 +115,11 @@
               <textarea
                 id="bulkParts"
                 rows="10"
-                placeholder="One part per line. Format: Name | file-a.stl, file-b.stl | Optional notes"
+                placeholder="One part per line. Format: Name | file-a.stl, file-b.stl | Optional notes | Optional quantity"
               ></textarea>
             </label>
             <div class="meta-block">
-              Lines are converted into part objects automatically. IDs are generated from the part name. If a section has options like printer size, choose a variant above to apply matching `requirements` to the imported parts.
+              Lines are converted into part objects automatically. IDs are generated from the part name. If a section has options like printer size, choose variant settings above to apply matching `requirements` to the imported parts. Quantity defaults to `1`.
             </div>
           </div>
 

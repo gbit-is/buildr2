@@ -158,6 +158,8 @@ async function setGuestProfile() {
 }
 
 async function loadPersistedProfile() {
+  localStorage.removeItem("buildr2-detail-panel-collapsed");
+
   const lastProfile = localStorage.getItem(LAST_PROFILE_KEY);
   if (!lastProfile) {
     return;
@@ -224,6 +226,39 @@ function buildDefaultOptions(type) {
   return selections;
 }
 
+function normalizeDroidOptionSelections() {
+  state.droids = state.droids.map((droid) => {
+    const type = state.droidTypes.get(droid.typeId);
+    if (!type) {
+      return droid;
+    }
+
+    const defaults = buildDefaultOptions(type);
+    const existingSelections = droid.optionSelections ?? {};
+    const mergedSelections = {};
+
+    Object.entries(defaults).forEach(([sectionId, sectionDefaults]) => {
+      mergedSelections[sectionId] = {
+        ...sectionDefaults,
+        ...(existingSelections[sectionId] ?? {})
+      };
+    });
+
+    Object.entries(existingSelections).forEach(([sectionId, sectionSelections]) => {
+      if (mergedSelections[sectionId]) {
+        return;
+      }
+
+      mergedSelections[sectionId] = sectionSelections;
+    });
+
+    return {
+      ...droid,
+      optionSelections: mergedSelections
+    };
+  });
+}
+
 async function loadWorkspaceState() {
   if (!state.profile) {
     return;
@@ -234,6 +269,7 @@ async function loadWorkspaceState() {
       ? readLocalWorkspace()
       : await fetchWorkspace(state.profile.id);
   state.droids = workspace.droids ?? [];
+  normalizeDroidOptionSelections();
   state.activeDroidId = workspace.activeDroidId ?? null;
   state.activeSectionId = workspace.activeSectionId ?? null;
   normalizeActiveSelection();
@@ -429,8 +465,8 @@ function renderDroidList() {
 
 function summarizeDroidProgress(droid, type) {
   const allParts = type.sections.flatMap((section) => getVisibleParts(section, droid.optionSelections?.[section.id] ?? {}));
-  const total = allParts.length;
-  const done = allParts.filter((part) => droid.printedParts?.[part.id]).length;
+  const total = allParts.reduce((sum, part) => sum + getPartQuantity(part), 0);
+  const done = allParts.reduce((sum, part) => sum + getPrintedCount(droid, part), 0);
   return { total, done };
 }
 
@@ -712,10 +748,11 @@ function renderSectionDetails() {
   state.activeSectionId = section.id;
   const selectedOptions = droid.optionSelections?.[section.id] ?? {};
   const visibleParts = getVisibleParts(section, selectedOptions);
-  const completed = visibleParts.filter((part) => droid.printedParts?.[part.id]).length;
+  const completed = visibleParts.reduce((sum, part) => sum + getPrintedCount(droid, part), 0);
+  const totalRequired = visibleParts.reduce((sum, part) => sum + getPartQuantity(part), 0);
 
   elements.sectionTitle.textContent = section.label;
-  elements.progressPill.textContent = `${completed} / ${visibleParts.length} printed`;
+  elements.progressPill.textContent = `${completed} / ${totalRequired} printed`;
 
   renderSectionOptions(section, selectedOptions);
   renderParts(section, selectedOptions, droid);
@@ -779,8 +816,14 @@ function renderParts(section, selectedOptions, droid) {
 
       const cards = parts
         .map((part) => {
-          const checked = droid.printedParts?.[part.id] ? "checked" : "";
+          const quantity = getPartQuantity(part);
+          const printedCount = getPrintedCount(droid, part);
+          const isComplete = printedCount >= quantity;
           const files = (part.files ?? []).map((file) => `<code>${escapeHtml(file)}</code>`).join("");
+          const checkboxList = Array.from({ length: quantity }, (_, index) => {
+            const checked = index < printedCount ? "checked" : "";
+            return `<input type="checkbox" data-part-id="${part.id}" data-copy-index="${index}" ${checked} />`;
+          }).join("");
           return `
             <article class="part-card">
               <header>
@@ -788,14 +831,14 @@ function renderParts(section, selectedOptions, droid) {
                   <h4>${escapeHtml(part.name)}</h4>
                   <div class="meta">${escapeHtml(part.id)}</div>
                 </div>
-                <span class="badge ${checked ? "complete" : ""}">${checked ? "Printed" : "Pending"}</span>
+                <span class="badge ${isComplete ? "complete" : ""}">${printedCount} / ${quantity} printed</span>
               </header>
               ${part.notes ? `<div class="part-notes">${escapeHtml(part.notes)}</div>` : ""}
               ${files ? `<div class="part-files">${files}</div>` : ""}
-              <label class="checkbox-row">
-                Printed
-                <input type="checkbox" data-part-id="${part.id}" ${checked} />
-              </label>
+              <div class="checkbox-row">
+                <span>Printed${quantity > 1 ? ` (${quantity} copies)` : ""}</span>
+                <div class="multi-checkboxes">${checkboxList}</div>
+              </div>
             </article>
           `;
         })
@@ -816,8 +859,22 @@ function renderParts(section, selectedOptions, droid) {
   elements.partsPanel.querySelectorAll("[data-part-id]").forEach((checkbox) => {
     checkbox.addEventListener("change", async (event) => {
       const partId = event.currentTarget.dataset.partId;
-      droid.printedParts[partId] = event.currentTarget.checked;
+      const part = [...(section.categories?.main ?? []), ...(section.categories?.greebles ?? [])].find(
+        (item) => item.id === partId
+      );
+      const quantity = getPartQuantity(part);
+      const checkedBoxes = Array.from(
+        elements.partsPanel.querySelectorAll(`[data-part-id="${CSS.escape(partId)}"]`)
+      ).filter((input) => input.checked).length;
+
+      if (quantity <= 1) {
+        droid.printedParts[partId] = checkedBoxes > 0;
+      } else {
+        droid.printedParts[partId] = checkedBoxes;
+      }
+
       await persistWorkspaceState();
+      renderCanvas();
       renderSectionDetails();
       renderDroidList();
     });
@@ -839,6 +896,25 @@ function filterParts(parts, selectedOptions) {
       allowedChoices.includes(selectedOptions[optionId])
     );
   });
+}
+
+function getPartQuantity(part) {
+  return Math.max(1, Number(part?.quantity ?? 1) || 1);
+}
+
+function getPrintedCount(droid, part) {
+  const quantity = getPartQuantity(part);
+  const savedValue = droid.printedParts?.[part.id];
+
+  if (typeof savedValue === "number") {
+    return clamp(savedValue, 0, quantity);
+  }
+
+  if (savedValue === true) {
+    return quantity;
+  }
+
+  return 0;
 }
 
 function normalizeActiveSelection() {

@@ -1,0 +1,929 @@
+Body
+├── Basic Body
+│   ├── 250mm Cut Main Body
+│   │   ├── Current Body
+│   │   │   ├── BodyBars
+│   │   │   │   ├── BodyBarFL.stl
+│   │   │   │   ├── BodyBarFR.stl
+│   │   │   │   ├── BodyBarLegFL.stl
+│   │   │   │   ├── BodyBarLegFR.stl
+│   │   │   │   ├── BodyBarLegRL.stl
+│   │   │   │   ├── BodyBarLegRR.stl
+│   │   │   │   ├── BodyBarRL.stl
+│   │   │   │   └── BodyBarRR.stl
+│   │   │   ├── CenterBody
+│   │   │   │   ├── CentreFront.stl
+│   │   │   │   ├── CentreLeft.stl
+│   │   │   │   └── CentreRight.stl
+│   │   │   ├── LowerBody
+│   │   │   │   ├── BaseConnector.stl
+│   │   │   │   ├── CentreConnect.stl
+│   │   │   │   ├── LowerFront.stl
+│   │   │   │   ├── LowerLeft.stl
+│   │   │   │   ├── LowerRear.stl
+│   │   │   │   └── LowerRight.stl
+│   │   │   └── UpperBody
+│   │   │       ├── Connector.stl
+│   │   │       ├── TopFront.stl
+│   │   │       ├── TopLeft.stl
+│   │   │       ├── TopRear.stl
+│   │   │       └── TopRight.stl
+│   │   ├── Previous Body
+│   │   │   ├── BodyBar
+│   │   │   │   ├── BodyBarFL.stl
+│   │   │   │   ├── BodyBarFR.stl
+│   │   │   │   ├── BodyBarRL.stl
+│   │   │   │   └── BodyBarRR.stl
+│   │   │   ├── CentreRing
+│   │   │   │   ├── CentreFront.stl
+│   │   │   │   ├── CentreLeft.stl
+│   │   │   │   └── CentreRight.stl
+│   │   │   ├── LowerRing
+│   │   │   │   ├── BaseConnector.stl.stl
+│   │   │   │   ├── CentreConnect.stl.stl
+│   │   │   │   ├── LowerFront.stl.stl
+│   │   │   │   ├── LowerLeft.stl.stl
+│   │   │   │   ├── LowerRear.stl.stl
+│   │   │   │   └── LowerRight.stl.stl
+│   │   │   └── TopRing
+│   │   │       ├── Connectorx4.stl
+│   │   │       ├── TopFront.stl
+│   │   │       ├── TopLeft.stl
+│   │   │       ├── TopRear.stl
+│   │   │       └── TopRight.stl
+│   │   ├── README Current Body.txt
+│   │   └── Updated and Previous.jpg
+│   ├── 500mm Cut Main Body
+│   │   └── BodyRings
+│   │       ├── BodyBars
+│   │       │   ├── BodyBarFL.stl
+│   │       │   ├── BodyBarFR.stl
+│   │       │   ├── BodyBarLegFL.stl
+│   │       │   ├── BodyBarLegFR.stl
+│   │       │   ├── BodyBarLegRL.stl
+│   │       │   ├── BodyBarLegRR.stl
+│   │       │   ├── BodyBarRL.stl
+│   │       │   └── BodyBarRR.stl
+│   │       ├── Centre500.stl
+│   │       ├── Lower500.stl
+│   │       └── Top500.stl
+│   ├── BackPanel
+│   │   ├── BackPanelRodx3.stl
+│   │   ├── Greebles
+│   │   │   ├── PowerCoupler
+│   │   │   │   ├── PowerCouplerFront.stl
+│   │   │   │   ├── PowerCouplerFront2.stl
+│   │   │   │   ├── PowerCouplerMain.stl
+│   │   │   │   ├── PowerCouplerRear.stl
+│   │   │   │   └── PowerCouplerRing.stl
+│   │   │   ├── RearCoinReturnL.stl
+│   │   │   └── RearCoinReturnR.stl
+│   │   ├── RearPanel C.stl
+│   │   ├── RearPanel TOP.stl
+│   │   ├── RearPanelA.stl
+│   │   ├── RearPanelB.stl
+│   │   └── RearPanelBOTTOM.stl
+│   ├── BodyBars
+│   │   ├── BodyBarFL.stl
+│   │   ├── BodyBarFR.stl
+│   │   ├── BodyBarLegFL.stl
+│   │   ├── BodyBarLegFR.stl
+│   │   ├── BodyBarLegRL.stl
+│   │   ├── BodyBarLegRR.stl
+│   │   ├── BodyBarRL.stl
+│   │   └── BodyBarRR.stl
+│   ├── Dome Gear Motor Slipring
+│   │   ├── 3pinMagTag DomeA.stl
+│   │   ├── 3pinMagTag DomeB.stl
+│   │   ├── 3pinMagTag holder.stl
+│   │   ├── Gear GraniteEarth
+│   │   │   ├── GGBoneConnector.stl
+│   │   │   ├── GGGearRingA.stl
+│   │   │   ├── GGGearRingB.stl
+│   │   │   ├── GGGearRingC.stl
+│   │   │   ├── GGGearRingD.stl
+│   │   │   ├── Notes.txt
+│   │   │   └── SinglePrint GGGearRing.stl
+│   │   ├── Gear ID 387.5mm
+│   │   │   ├── 3mm Spacer ring Lazy Susan Body.stl
+│   │   │   ├── BoneConnector.stl
+│   │   │   ├── GearRingA.stl
+│   │   │   ├── GearRingB.stl
+│   │   │   ├── GearRingC.stl
+│   │   │   ├── GearRingD.stl
+│   │   │   ├── Notes.txt
+│   │   │   └── Singleprint GearRing.stl
+│   │   ├── LowerCentre 22mm.stl
+│   │   ├── MotorMount
+│   │   │   ├── DomeGear SonicHub.stl
+│   │   │   ├── MotorBracket Pololu 37D.stl
+│   │   │   ├── Option - StandardCoupler - 5mmSpacer.stl
+│   │   │   ├── Option Readme.txt
+│   │   │   └── Option-StandardCoupler Dome Gear.stl
+│   │   ├── SlipRingTower 22mm.stl
+│   │   └── UpperCentre 22mm.stl
+│   ├── Doors
+│   │   ├── LongDoorx4.stl
+│   │   ├── MediumDoorx1.stl
+│   │   ├── OptionSmallerDoor Readme.txt
+│   │   ├── OptionsmallerLargeDoorx4 readme.stl
+│   │   └── SmallDoorx1.stl
+│   ├── Greebles
+│   │   ├── CoinSlotsx6.stl
+│   │   ├── FrontCoinReturn.stl
+│   │   ├── Hex
+│   │   │   ├── FrontHexCentre.stl
+│   │   │   ├── FrontHexOuter.stl
+│   │   │   ├── FrontHexRear.stl
+│   │   │   ├── RearHexCentre.stl
+│   │   │   ├── RearHexOuter.stl
+│   │   │   └── RearHexRear.stl
+│   │   ├── LowerFrontVent.stl
+│   │   ├── Pockets
+│   │   │   ├── BluePocketx2.stl
+│   │   │   ├── Fingersx8.stl
+│   │   │   └── Pocketx2.stl
+│   │   ├── PowerCouplerFront
+│   │   │   ├── PowerCouplerFront.stl
+│   │   │   ├── PowerCouplerFront2.stl
+│   │   │   ├── PowerCouplerMain.stl
+│   │   │   ├── PowerCouplerRear.stl
+│   │   │   └── PowerCouplerRing.stl
+│   │   ├── SideVentx2
+│   │   │   ├── BluePlate.stl
+│   │   │   ├── Fingerx4.stl
+│   │   │   └── SideVentBody.stl
+│   │   ├── UpperFrontVent.stl
+│   │   └── VentFrame.stl
+│   ├── Internals Shoulders
+│   │   ├── CentreBar.stl
+│   │   ├── CentreBarSupportA.stl
+│   │   ├── CentreBarSupportB.stl
+│   │   ├── CentreLegAlign.stl
+│   │   ├── CentreLegPlate.stl
+│   │   ├── LeftLegRing.stl
+│   │   ├── LeftShoulder.stl
+│   │   ├── LeftShoulderHub.stl
+│   │   ├── RightLegRing.stl
+│   │   ├── RightShoulder.stl
+│   │   └── RightShoulderHub.stl
+│   ├── Skirt
+│   │   ├── CentreLegAlign.stl
+│   │   ├── CentreLegPlate.stl
+│   │   ├── SinglePrintSkirt.stl
+│   │   ├── SkirtAx2.stl
+│   │   └── SkirtBx2.stl
+│   └── UtilityArms
+│       ├── LowerDataPort.stl
+│       ├── UpperDataPort.stl
+│       ├── UtilityArmPanel.stl
+│       └── UtilityArmx2.stl
+├── Complex Body
+│   ├── 250mm Beta Files
+│   │   ├── Backpanel
+│   │   │   ├── BackPanelRodx3.stl
+│   │   │   ├── Greebles
+│   │   │   │   ├── PowerCoupler
+│   │   │   │   │   ├── PowerCouplerFront.stl
+│   │   │   │   │   ├── PowerCouplerFront2.stl
+│   │   │   │   │   ├── PowerCouplerMain.stl
+│   │   │   │   │   ├── PowerCouplerRear.stl
+│   │   │   │   │   └── PowerCouplerRing.stl
+│   │   │   │   ├── RearCoinReturnL.stl
+│   │   │   │   └── RearCoinReturnR.stl
+│   │   │   ├── RearPanel C.stl
+│   │   │   ├── RearPanel TOP.stl
+│   │   │   ├── RearPanelA.stl
+│   │   │   ├── RearPanelB.stl
+│   │   │   └── RearPanelBOTTOM.stl
+│   │   ├── Beta notes.txt
+│   │   ├── BodyBars
+│   │   │   ├── BodyBarLegFL.stl
+│   │   │   ├── BodyBarLegFR.stl
+│   │   │   ├── BodyBarLegRL.stl
+│   │   │   └── BodyBarLegRR.stl
+│   │   ├── BreadPanDoorMech
+│   │   │   ├── FLBreadpanDoor.stl
+│   │   │   ├── FLBreadpanServoBracket.stl
+│   │   │   ├── FLLowerBreadPanHinge.stl
+│   │   │   ├── FLLowerBreadpanHingeB.stl
+│   │   │   ├── FLUpperBreadpanHinge.stl
+│   │   │   ├── FLUpperBreadpanHingeB.stl
+│   │   │   ├── FRBreadpandoor.stl
+│   │   │   ├── FRBreadpanServoBracket.stl
+│   │   │   ├── FRLowerBreadPanHinge.stl
+│   │   │   ├── FRLowerBreadpanHingeB.stl
+│   │   │   ├── FRUpperBreadpanHinge.stl
+│   │   │   ├── FRUpperBreadpanHingeB.stl
+│   │   │   ├── RLBreadpanDoor.stl
+│   │   │   ├── RLBreadpanServoBracket.stl
+│   │   │   ├── RLLowerBreadPanHinge.stl
+│   │   │   ├── RLLowerBreadpanHingeB.stl
+│   │   │   ├── RLUpperBreadpanHinge.stl
+│   │   │   ├── RLUpperBreadpanHingeB.stl
+│   │   │   ├── RRBreadpandoor.stl
+│   │   │   ├── RRBreadpanServoBracket.stl
+│   │   │   ├── RRLowerBreadPanHinge.stl
+│   │   │   ├── RRLowerBreadpanHingeB.stl
+│   │   │   ├── RRUpperBreadpanHinge.stl
+│   │   │   └── RRUpperBreadpanHingeB.stl
+│   │   ├── ChargingBay
+│   │   │   ├── Charging Bay Plain Box.stl
+│   │   │   ├── ChargingBayDoor.stl
+│   │   │   ├── ChargingBayHinge.stl
+│   │   │   ├── ChargingBayServoBracket.stl
+│   │   │   ├── Option - Charging Bay LEDs Box.stl
+│   │   │   ├── Option - ChargingBayLEDSServoBracket.stl
+│   │   │   └── Updated - Charging Bay LEDs Box.stl
+│   │   ├── Dataport
+│   │   │   ├── DataPortDoor.stl
+│   │   │   ├── LowerHinge.stl
+│   │   │   ├── Option Dataport Servo Bracket.stl
+│   │   │   ├── Option LEDPlainDataPortBackBox.stl
+│   │   │   ├── PlainDataPortBackBox.stl
+│   │   │   ├── ServoBracket.stl
+│   │   │   ├── Updated - LEDPlainDataPortBackBox.stl
+│   │   │   └── UpperHinge.stl
+│   │   ├── Dome Gear Motor Slipring
+│   │   │   ├── 3pinMagTag DomeA.stl
+│   │   │   ├── 3pinMagTag DomeB.stl
+│   │   │   ├── 3pinMagTag holder.stl
+│   │   │   ├── Gear GraniteEarth
+│   │   │   │   ├── GGBoneConnector.stl
+│   │   │   │   ├── GGGearRingA.stl
+│   │   │   │   ├── GGGearRingB.stl
+│   │   │   │   ├── GGGearRingC.stl
+│   │   │   │   ├── GGGearRingD.stl
+│   │   │   │   ├── Notes.txt
+│   │   │   │   └── SinglePrint GGGearRing.stl
+│   │   │   ├── Gear ID 387.5mm
+│   │   │   │   ├── 3mm Spacer ring Lazy Susan Body.stl
+│   │   │   │   ├── BoneConnector.stl
+│   │   │   │   ├── GearRingA.stl
+│   │   │   │   ├── GearRingB.stl
+│   │   │   │   ├── GearRingC.stl
+│   │   │   │   ├── GearRingD.stl
+│   │   │   │   ├── Notes.txt
+│   │   │   │   └── Singleprint GearRing.stl
+│   │   │   ├── LowerCentre 22mm.stl
+│   │   │   ├── MotorMount
+│   │   │   │   ├── DomeGear SonicHub.stl
+│   │   │   │   ├── MotorBracket Pololu 37D.stl
+│   │   │   │   ├── Option - StandardCoupler - 5mmSpacer.stl
+│   │   │   │   ├── Option Readme.txt
+│   │   │   │   └── Option-StandardCoupler Dome Gear.stl
+│   │   │   ├── SlipRingTower 22mm.stl
+│   │   │   └── UpperCentre 22mm.stl
+│   │   ├── Drawers
+│   │   │   ├── Draw Reference.jpg
+│   │   │   ├── Drawer 1
+│   │   │   │   ├── Drawer.stl
+│   │   │   │   ├── DrawerGear.stl
+│   │   │   │   ├── OuterFront.stl
+│   │   │   │   ├── Pinion.stl
+│   │   │   │   ├── ServoFrame.stl
+│   │   │   │   └── ServoGear.stl
+│   │   │   ├── Drawer 2
+│   │   │   │   ├── drawer.stl
+│   │   │   │   ├── DrawerGear.stl
+│   │   │   │   ├── Outerfront.stl
+│   │   │   │   ├── Pinion.stl
+│   │   │   │   ├── ServoFrame.stl
+│   │   │   │   └── ServoGear.stl
+│   │   │   ├── Drawer 3
+│   │   │   │   ├── Drawer.stl
+│   │   │   │   ├── DrawerGear.stl
+│   │   │   │   ├── OuterFront.stl
+│   │   │   │   ├── Pinion.stl
+│   │   │   │   ├── ServoFrame.stl
+│   │   │   │   └── ServoGear.stl
+│   │   │   ├── Drawer 4
+│   │   │   │   ├── Drawer.stl
+│   │   │   │   ├── DrawerGear.stl
+│   │   │   │   ├── Outerfront.stl
+│   │   │   │   ├── Pinion.stl
+│   │   │   │   ├── ServoFrame.stl
+│   │   │   │   └── ServoGear.stl
+│   │   │   ├── Drawer 5
+│   │   │   │   ├── Drawer.stl
+│   │   │   │   ├── DrawerGear.stl
+│   │   │   │   ├── OuterFront.stl
+│   │   │   │   ├── Pinion.stl
+│   │   │   │   ├── ServoFrame.stl
+│   │   │   │   └── ServoGear.stl
+│   │   │   ├── Drawer 6
+│   │   │   │   ├── Drawer.stl
+│   │   │   │   ├── DrawerGear.stl
+│   │   │   │   ├── Outerfront.stl
+│   │   │   │   ├── Pinion.stl
+│   │   │   │   ├── ServoFrame.stl
+│   │   │   │   └── ServoGear.stl
+│   │   │   └── Drawer 7
+│   │   │       ├── Drawer.stl
+│   │   │       ├── DrawerGear.stl
+│   │   │       ├── Outerfront.stl
+│   │   │       ├── Pinion.stl
+│   │   │       ├── ServoFrame.stl
+│   │   │       └── ServoGear.stl
+│   │   ├── Greebles
+│   │   │   ├── CoinSlotsx6.stl
+│   │   │   ├── FrontCoinReturn.stl
+│   │   │   ├── Hex
+│   │   │   │   ├── FrontHexCentre.stl
+│   │   │   │   ├── FrontHexOuter.stl
+│   │   │   │   ├── FrontHexRear.stl
+│   │   │   │   ├── RearHexCentre.stl
+│   │   │   │   ├── RearHexOuter.stl
+│   │   │   │   └── RearHexRear.stl
+│   │   │   ├── LowerFrontVent.stl
+│   │   │   ├── Pockets
+│   │   │   │   ├── BluePocketx2.stl
+│   │   │   │   ├── Fingersx8.stl
+│   │   │   │   └── Pocketx2.stl
+│   │   │   ├── PowerCouplerFront
+│   │   │   │   ├── PowerCouplerFront.stl
+│   │   │   │   ├── PowerCouplerFront2.stl
+│   │   │   │   ├── PowerCouplerMain.stl
+│   │   │   │   ├── PowerCouplerRear.stl
+│   │   │   │   └── PowerCouplerRing.stl
+│   │   │   ├── SideVentx2
+│   │   │   │   ├── BluePlate.stl
+│   │   │   │   ├── Fingerx4.stl
+│   │   │   │   └── SideVentBody.stl
+│   │   │   ├── UpperFrontVent.stl
+│   │   │   └── VentFrame.stl
+│   │   ├── Hofferth Mk4 Utility Arm Module
+│   │   │   ├── Mk4 Utility Arm Module Instructions JWH.pdf
+│   │   │   ├── Mk4 Utility Arm Module.3mf
+│   │   │   └── STLs
+│   │   │       ├── DataPort LED Tray 10mm.stl
+│   │   │       ├── DataPort LED Tray 12mm.stl
+│   │   │       ├── DataPort LED Tray 14mm.stl
+│   │   │       ├── DataPort Lower Alt.stl
+│   │   │       ├── DataPort Upper Alt.stl
+│   │   │       ├── Utility Arm Elec Panel.stl
+│   │   │       ├── Utility Arm Module.stl
+│   │   │       ├── Utility Arm Servo Bracket.stl
+│   │   │       ├── Utility Arm Servo Gear Rev B Testing.stl
+│   │   │       ├── Utility Arm Servo Gear x2.stl
+│   │   │       ├── UtilityArm A x2.stl
+│   │   │       ├── UtilityArm B x2.stl
+│   │   │       └── UtilityArm C x2.stl
+│   │   ├── Internals Shoulders
+│   │   │   ├── BoltHolder.stl
+│   │   │   ├── CentreBar.stl
+│   │   │   ├── CentreBarSupportA.stl
+│   │   │   ├── CentreBarSupportB.stl
+│   │   │   ├── CentreLegAlign.stl
+│   │   │   ├── CentreLegPlate.stl
+│   │   │   ├── LeftShoulder.stl
+│   │   │   ├── LeftShoulderHub.stl
+│   │   │   ├── RightShoulder.stl
+│   │   │   └── RightShoulderHub.stl
+│   │   ├── MainFrame
+│   │   │   ├── CentreFront.stl
+│   │   │   ├── CentreLeft.stl
+│   │   │   ├── CentreRight.stl
+│   │   │   ├── LargeDogBoneConnector.stl
+│   │   │   ├── LowerFront.stl
+│   │   │   ├── LowerLeft.stl
+│   │   │   ├── LowerRear.stl
+│   │   │   ├── LowerRight.stl
+│   │   │   ├── MK4 Beware files - issues.txt
+│   │   │   ├── SmallDogBoneConnector.stl
+│   │   │   ├── TopFront.stl
+│   │   │   ├── TopLeft.stl
+│   │   │   ├── TopRear.stl
+│   │   │   ├── TopRight.stl
+│   │   │   └── VentFrameBox.stl
+│   │   ├── Skirt
+│   │   │   ├── CentreLegAlign.stl
+│   │   │   ├── CentreLegPlate.stl
+│   │   │   ├── SinglePrintSkirt.stl
+│   │   │   ├── SkirtAx2.stl
+│   │   │   └── SkirtBx2.stl
+│   │   └── SmallLongDoor
+│   │       ├── SmallLongDoor.stl
+│   │       ├── SmallLongDoorBackbox.stl
+│   │       ├── SmallLongDoorLowerHinge.stl
+│   │       ├── SmallLongDoorServoBracket.stl
+│   │       └── SmallLongDoorUpperHinge.stl
+│   └── 500mm Beta Files
+│       ├── Centre500.stl
+│       ├── Lower500.stl
+│       └── Top500.stl
+├── LazySusanDrillingTemplatex6.stl
+└── MK4 Astromech Simple Body Instructions Draft part 1.pdf
+Dome
+├── Basic Dome
+│   ├── CutVersion
+│   │   ├── CutRing Basic Mount
+│   │   │   ├── InnerRing 1.stl
+│   │   │   ├── InnerRing2.stl
+│   │   │   ├── InnerRing3.stl
+│   │   │   ├── InnerRing4.stl
+│   │   │   ├── InnerRing5.stl
+│   │   │   └── InnerRing6.stl
+│   │   ├── LowerRing
+│   │   │   └── BaseRingx5.stl
+│   │   ├── MainDome
+│   │   │   ├── A.stl
+│   │   │   ├── B.stl
+│   │   │   ├── C.stl
+│   │   │   ├── D.stl
+│   │   │   ├── E.stl
+│   │   │   └── F.stl
+│   │   └── PieRing
+│   │       ├── PieRingx1.stl
+│   │       ├── PieRingx5.stl
+│   │       └── TopPanel.stl
+│   ├── Greebles
+│   │   ├── Buttonx2.stl
+│   │   ├── Holos
+│   │   │   ├── HoloFrameA.stl
+│   │   │   ├── HoloFrameA2.stl
+│   │   │   └── MainHoloA.stl
+│   │   ├── LargeLogic
+│   │   │   ├── LargeLogicBracket.stl
+│   │   │   ├── LargeLogicInner.stl
+│   │   │   └── LargeLogicOuter.stl
+│   │   ├── PSIs
+│   │   │   ├── FrontPSI.stl
+│   │   │   ├── FrontPSIRing.stl
+│   │   │   ├── RearPSI.stl
+│   │   │   └── RearPSIRing.stl
+│   │   ├── RadarEye
+│   │   │   └── RadarEye.stl
+│   │   └── Small Logic
+│   │       ├── RearLogicBracket.stl
+│   │       ├── RearLogicFrame.stl
+│   │       ├── SmallLogicLightLow.stl
+│   │       └── SmallLogicLightUp.stl
+│   ├── MK4 Quick Flythrough Guide.txt
+│   ├── PaintMasks
+│   │   ├── PiePaint.stl
+│   │   └── TopPaint.stl
+│   ├── SimpleOneMagRing1.stl
+│   ├── SimpleOneMagRing2.stl
+│   ├── SimpleOneMagRing3.stl
+│   ├── SimpleOneMagRing4.stl
+│   └── Single Print
+│       ├── FullRing - Basic mount.stl
+│       ├── MK4 Single Dome.stl
+│       ├── SingleDomeUpperHoloBracket.stl
+│       ├── UpperHoloFrame.stl
+│       └── UpperHoloFrameRear.stl
+├── Complex Dome
+│   ├── Dome - Cut Print
+│   │   ├── 250 plate LowerDome - With Warp Fins (recommended)
+│   │   │   ├── MainDome1.stl
+│   │   │   ├── MainDome2.stl
+│   │   │   ├── MainDome3.stl
+│   │   │   ├── MainDome4.stl
+│   │   │   ├── MainDome5.stl
+│   │   │   └── ReadMe.txt
+│   │   ├── 250 plate Upper Dome
+│   │   │   ├── Consolidated pies Hi Rez
+│   │   │   │   ├── MainPiec1.stl
+│   │   │   │   ├── MainPiec2.stl
+│   │   │   │   └── MainPiec3.stl
+│   │   │   ├── David Johnson mod - consolidated pies
+│   │   │   │   ├── 3 section main pie.3mf
+│   │   │   │   ├── MainPie 1&2.stl
+│   │   │   │   ├── MainPie 3&4.stl
+│   │   │   │   ├── MainPie 5&6 all hinges.stl
+│   │   │   │   └── MainPie 5&6.stl
+│   │   │   ├── MainPie1.stl
+│   │   │   ├── MainPie2.stl
+│   │   │   ├── MainPie3.stl
+│   │   │   ├── MainPie4.stl
+│   │   │   ├── MainPie5.stl
+│   │   │   └── MainPie6.stl
+│   │   ├── ComplexCutMagRing2.stl
+│   │   ├── ComplexCutMagRing3.stl
+│   │   ├── ComplexCutMagRing4.stl
+│   │   ├── ConplexCutMagRing1.stl
+│   │   ├── Different Community Cuts
+│   │   │   └── LowerDome without Warp Fins
+│   │   │       ├── BoneConnector.stl
+│   │   │       ├── Maindome1 cut
+│   │   │       │   ├── MainDome1a.stl
+│   │   │       │   └── MainDome1b.stl
+│   │   │       ├── MainDome1.stl
+│   │   │       ├── MainDome2.stl
+│   │   │       ├── MainDome3.stl
+│   │   │       ├── MainDome4.stl
+│   │   │       └── MainDome5.stl
+│   │   ├── DomeInnerRingx6.stl
+│   │   ├── Lowerringx6.stl
+│   │   ├── MK4 Dome basic assembly.pdf
+│   │   └── Note-Warp fins.txt
+│   ├── Dome - Single Print
+│   │   ├── ComplexCutMagRingFull.stl
+│   │   ├── ComplexDome Singleprint.stl
+│   │   └── InnerRing Single Print.stl
+│   ├── Greebles
+│   │   ├── Buttonx2.stl
+│   │   ├── Holos
+│   │   │   ├── HoloFrameA.stl
+│   │   │   ├── HoloFrameA2.stl
+│   │   │   ├── HoloLockRing.stl
+│   │   │   ├── HoloSlideBracket.stl
+│   │   │   ├── MainHoloA.stl
+│   │   │   ├── TopHoloFrameA.stl
+│   │   │   ├── TopHoloFrameA2.stl
+│   │   │   └── TopMainHoloA.stl
+│   │   ├── LargeLogic
+│   │   │   ├── LargeBar.stl
+│   │   │   ├── LargeLogicInner.stl
+│   │   │   └── LargeLogicOuter.stl
+│   │   ├── PSIs
+│   │   │   ├── FrontPSI.stl
+│   │   │   ├── FrontPSIRing.stl
+│   │   │   ├── RearPSI.stl
+│   │   │   └── RearPSIRing.stl
+│   │   ├── RadarEye.stl
+│   │   └── SmallLogics
+│   │       ├── RearLogicBar.stl
+│   │       ├── RearSmallLogicFrame.stl
+│   │       ├── SmallLogicLightLow.stl
+│   │       └── SmallLogicLightUp.stl
+│   ├── Lower Panels
+│   │   ├── Hinges
+│   │   │   ├── BigBlueHingeBasex1.stl
+│   │   │   ├── BigBlueHingex1.stl
+│   │   │   ├── BigSilverHingeBasex1.stl
+│   │   │   ├── BigSilverHingex1.stl
+│   │   │   ├── Dome - Cut Print
+│   │   │   │   ├── DomeInnerRingx6.stl
+│   │   │   │   ├── LowerDome
+│   │   │   │   │   ├── BoneConnector.stl
+│   │   │   │   │   ├── MainDome1.stl
+│   │   │   │   │   ├── MainDome2.stl
+│   │   │   │   │   ├── MainDome3.stl
+│   │   │   │   │   ├── MainDome4.stl
+│   │   │   │   │   └── MainDome5.stl
+│   │   │   │   ├── Lowerringx6.stl
+│   │   │   │   ├── MK4 Dome basic assembly.pdf
+│   │   │   │   └── Upper Dome
+│   │   │   │       ├── MainPie1.stl
+│   │   │   │       ├── MainPie2.stl
+│   │   │   │       ├── MainPie3.stl
+│   │   │   │       ├── MainPie4.stl
+│   │   │   │       ├── MainPie5.stl
+│   │   │   │       └── MainPie6.stl
+│   │   │   ├── HingeBasex3.stl
+│   │   │   ├── PanelHingex3.stl
+│   │   │   ├── SmallestHingeBasex1.stl
+│   │   │   ├── SmallestHingex1.stl
+│   │   │   ├── SmallHingeBasex1.stl
+│   │   │   └── SmallHingex1.stl
+│   │   ├── Panel1.stl
+│   │   ├── Panel10.stl
+│   │   ├── Panel11.stl
+│   │   ├── Panel12.stl
+│   │   ├── Panel13.stl
+│   │   ├── Panel14.stl
+│   │   ├── Panel2.stl
+│   │   ├── Panel3.stl
+│   │   ├── Panel4.stl
+│   │   ├── Panel5.stl
+│   │   ├── Panel6.stl
+│   │   ├── Panel7.stl
+│   │   ├── Panel8.stl
+│   │   └── Panel9.stl
+│   ├── Lower Ring for Veneers.stl
+│   ├── Pie Upper Panels
+│   │   ├── DomeCentre.stl
+│   │   ├── Hinged Piex4.stl
+│   │   ├── Hinges
+│   │   │   ├── HingeAx4.stl
+│   │   │   └── ServoMountx4.stl
+│   │   ├── HoloPie.stl
+│   │   └── StaticPiex1.stl
+│   └── Veneer.stl
+└── SandBlock.stl
+Legs
+├── 8mmLegPlugx4 per leg.stl
+├── BoosterPins.stl
+├── CentreAnkleFoot
+│   ├── AnkleC.stl
+│   ├── BoltHolderx4.stl
+│   ├── Foot Assembly
+│   │   ├── CentreFootSkin.stl
+│   │   ├── CentreFootSkinSideA.stl
+│   │   ├── CentreFootSkinSideB.stl
+│   │   ├── CentrePlate.stl
+│   │   ├── CentreSkinStripsx2.stl
+│   │   ├── EndFramex2.stl
+│   │   ├── GoBilda_96mm_Centerfoot_modified
+│   │   │   ├── EndFramex2.stl
+│   │   │   ├── MainFramex2.stl
+│   │   │   ├── OmniframeAx2.stl
+│   │   │   ├── OmniframeBx2.stl
+│   │   │   ├── SemiShpere_TPUx8.stl
+│   │   │   ├── Wheel Adapter Outsidex2.stl
+│   │   │   └── Wheel adapterx1.stl
+│   │   ├── MainFramex2.stl
+│   │   ├── OmniframeAx2.stl
+│   │   ├── OmniframeBx2.stl
+│   │   ├── OmniInsertx2.stl
+│   │   └── Option - StaticFrame x2.stl
+│   ├── MiddleCylinderx2.stl
+│   ├── MK4 Astromech Centre Ankle instructions.pdf
+│   ├── MK4 Astromech Centre foot instructions.pdf
+│   ├── MK4 to MK3 spacer convertor.stl
+│   ├── Optional Long Ankle
+│   │   ├── AnkleC.stl
+│   │   ├── LNGAnkleA.stl
+│   │   ├── LNGAnkleB.stl
+│   │   └── LNGCentreAnkle.stl
+│   ├── Optional Long Leg or Ankle.txt
+│   ├── OuterCylinderx4.stl
+│   ├── STDAnkleA.stl
+│   ├── STDAnkleB.stl
+│   └── STDCentreAnkle.stl
+├── Community remixes
+│   └── horseshoe complication
+│       ├── horseshoe complication backplate L.stl
+│       ├── horseshoe complication backplate R.stl
+│       ├── horseshoe complication body L.stl
+│       ├── horseshoe complication body R.stl
+│       ├── horseshoe complication button nook flat.stl
+│       ├── horseshoe complication button nook slanted.stl
+│       ├── horseshoe complication center insert L 1.stl
+│       ├── horseshoe complication center insert L 2.stl
+│       ├── horseshoe complication center insert L 3.stl
+│       ├── horseshoe complication center insert R 1.stl
+│       ├── horseshoe complication center insert R 2.stl
+│       ├── horseshoe complication center insert R 3.stl
+│       └── horseshoe complication piston nook.stl
+├── Left
+│   ├── 1AnkleDetA.stl
+│   ├── 1AnkleDetB.stl
+│   ├── 2AnkleDetA.stl
+│   ├── 2AnkleDetB.stl
+│   ├── AnkleBracelet .stl
+│   ├── Boosterpegsx2.stl
+│   ├── Boosters No Masking
+│   │   ├── BaseInsertA.stl
+│   │   ├── BaseInsertB.stl
+│   │   ├── LBooster Base.stl
+│   │   ├── LBooster Base2.stl
+│   │   ├── Long
+│   │   │   ├── BoosterLONGA.stl
+│   │   │   ├── BoosterLONGB.stl
+│   │   │   ├── SilveeInsertLONGAx2.stl
+│   │   │   └── SilverInsertLONGBx2.stl
+│   │   ├── PlateDetailB.stl
+│   │   ├── PlateDetalA.stl
+│   │   └── STD
+│   │       ├── BoosterSTDA.stl
+│   │       ├── BoosterSTDB.stl
+│   │       ├── SilveeInsertSTDA Loose x2.stl
+│   │       ├── SilveeInsertSTDA Looser x2.stl
+│   │       ├── SilveeInsertSTDAx2.stl
+│   │       ├── SilveeInsertSTDB Loose x2.stl
+│   │       ├── SilveeInsertSTDB Looser x2.stl
+│   │       ├── Silver Inserts Note.txt
+│   │       └── SilverInsertSTDBx2.stl
+│   ├── Boosters Onepiece
+│   │   ├── LBoosterLong.stl
+│   │   └── LBoosterSTD.stl
+│   ├── LeftAnkle(Long).stl
+│   ├── LeftAnkle(STD).stl
+│   ├── LeftAnkleCurve.stl
+│   ├── LeftAnkleCylHolder.stl
+│   ├── LeftAnkleCylWedge.stl
+│   ├── LeftCentreHub.stl
+│   ├── LeftLeg.stl
+│   ├── LeftShoulder.stl
+│   ├── LegStrutA.stl
+│   ├── LegStrutB.stl
+│   ├── LHorseshoe-Updated.stl
+│   ├── MiddleCylinder.stl
+│   ├── Optional Long Leg or Ankle.txt
+│   ├── OuterCylinderx2.stl
+│   ├── Shou_Hydro.stl
+│   ├── ShoulderButtonx2.stl
+│   ├── ShoulderStabilisex2.stl
+│   ├── StrutHeader.stl
+│   ├── StrutLong.stl
+│   └── StrutSTD.stl
+├── LeftLegOnePiece.stl
+├── LWedgeangled.stl
+├── LWedgeUprightlock1.stl
+├── LWedgeUprightlock2.stl
+├── MK4 Astromech Simple Leg Instructions.pdf
+├── Right
+│   ├── 1AnkleDetA.stl
+│   ├── 1AnkleDetB.stl
+│   ├── 2AnkleDetA.stl
+│   ├── 2AnkleDetB.stl
+│   ├── AnkleBracelet.stl
+│   ├── BoosterPegsx2.stl
+│   ├── Boosters No Masking
+│   │   ├── BaseInsertA.stl
+│   │   ├── BaseInsertB.stl
+│   │   ├── Long
+│   │   │   ├── BoosterLONGA.stl
+│   │   │   ├── BoosterLONGB.stl
+│   │   │   ├── SilveeInsertLONGAx2.stl
+│   │   │   └── SilverInsertLONGBx2.stl
+│   │   ├── PlateDetailB.stl
+│   │   ├── PlateDetalA.stl
+│   │   ├── RBooster Base.stl
+│   │   ├── RBooster Base2.stl
+│   │   └── STD
+│   │       ├── BoosterSTDA.stl
+│   │       ├── BoosterSTDB.stl
+│   │       ├── SilveeInsertSTDA Loose x2.stl
+│   │       ├── SilveeInsertSTDA Looser x2.stl
+│   │       ├── SilveeInsertSTDA.stl
+│   │       ├── SilveeInsertSTDAx2.stl
+│   │       ├── SilveeInsertSTDB Loose x2.stl
+│   │       ├── SilveeInsertSTDB Looser x2.stl
+│   │       ├── SilveeInsertSTDB.stl
+│   │       ├── Silver Inserts Note.txt
+│   │       └── SilverInsertSTDBx2.stl
+│   ├── Boosters Onepiece
+│   │   ├── RBoosterLong.stl
+│   │   └── RBoosterSTD.stl
+│   ├── LegStrutA.stl
+│   ├── LegStrutB.stl
+│   ├── MiddleCylinder.stl
+│   ├── Optional Long Leg or Ankle.txt
+│   ├── OuterCylinderx2.stl
+│   ├── RHorseshoe-updated.stl
+│   ├── RightAnkle(Long).stl
+│   ├── RightAnkle(STD).stl
+│   ├── RightAnkleCurve.stl
+│   ├── RightAnkleCylHolder.stl
+│   ├── RightAnkleCylWedge.stl
+│   ├── RightCentreHub.stl
+│   ├── RightLeg.stl
+│   ├── RightShoulder.stl
+│   ├── RShou_Hydro.stl
+│   ├── ShoulderButtonx2.stl
+│   ├── ShoulderStabilisex2.stl
+│   ├── StrutHeader.stl
+│   ├── StrutLong.stl
+│   └── StrutSTD.stl
+├── RightLegOnePiece.stl
+├── RWedgeangled.stl
+├── RWedgeUprightlock1.stl
+└── RWedgeUprightlock2.stl
+OuterFeet Drives
+├── Community mixes
+│   └── Adam Camacho Martin drives
+│       └── OuterFeet Drives for Motor MY6812
+│           ├── building materials.txt
+│           ├── Left
+│           │   ├── Abrazadera motor.stl
+│           │   ├── back drive wheel.stl
+│           │   ├── Base 1.stl
+│           │   ├── Base 2.stl
+│           │   ├── Base 3.stl
+│           │   ├── Base 4.stl
+│           │   ├── LBaseStripA.stl
+│           │   ├── LBatteryBoxMain.stl
+│           │   ├── Left mod Vex 3,25.3mf
+│           │   ├── Left mod Vex 4,0.3mf
+│           │   ├── Left mod.3mf
+│           │   ├── LHubSideA.stl
+│           │   ├── LHubSideB.stl
+│           │   ├── LOmniFrameA 9cm.stl
+│           │   ├── LOmniframeB 9cm.stl
+│           │   ├── LShellA.stl
+│           │   ├── Nucleo Rodillo x18.stl
+│           │   ├── Rodillo x18.stl
+│           │   ├── Separation.stl
+│           │   ├── Separator03 x4.stl
+│           │   ├── Sphere TPU x2.stl
+│           │   ├── Vex
+│           │   │   ├── Vex 3.25
+│           │   │   │   ├── LOmniFrameA.stl
+│           │   │   │   └── LOmniframeB.stl
+│           │   │   └── Vex 4.0
+│           │   │       ├── LOmniFrameA.stl
+│           │   │       └── LOmniframeB.stl
+│           │   └── Wheel.stl
+│           ├── Rigth
+│           │   ├── Abrazadera motor.stl
+│           │   ├── back drive wheel.stl
+│           │   ├── Base 1.stl
+│           │   ├── Base 2.stl
+│           │   ├── Base 3.stl
+│           │   ├── Base 4.stl
+│           │   ├── Nucleo Rodillo x18.stl
+│           │   ├── RBaseStripA.stl
+│           │   ├── RBatteryBoxMain.stl
+│           │   ├── RHubSideA.stl
+│           │   ├── RHubSideB.stl
+│           │   ├── Right mod vex 4,0.3mf
+│           │   ├── Right mod vex3,25.3mf
+│           │   ├── Right mod.3mf
+│           │   ├── Rodillo x18.stl
+│           │   ├── ROmniFrameA.stl
+│           │   ├── ROmniframeB.stl
+│           │   ├── RShellA.stl
+│           │   ├── Separation.stl
+│           │   ├── Separator03 x4.stl
+│           │   ├── Sphere TPU x2.stl
+│           │   ├── Vex
+│           │   │   ├── Vex 3.25
+│           │   │   │   ├── ROmniFrameA.stl
+│           │   │   │   └── ROmniframeB.stl
+│           │   │   └── Vex 4.0
+│           │   │       ├── ROmniFrameA.stl
+│           │   │       └── ROmniframeB.stl
+│           │   └── Wheel.stl
+│           ├── Test 1.jpg
+│           ├── Test 2.jpg
+│           ├── Test 3.jpg
+│           ├── Test 4.jpg
+│           ├── Test 5.jpg
+│           └── Test 6.jpg
+├── LeftFoot
+│   ├── LBaseShell
+│   │   ├── LBaseStripA.stl
+│   │   ├── LBaseStripB.stl
+│   │   ├── LShellA.stl
+│   │   ├── LShellB.stl
+│   │   ├── LShellC.stl
+│   │   ├── LStripA.stl
+│   │   ├── LStripB.stl
+│   │   ├── LTopFrame.stl
+│   │   ├── SecuringPin M6x75.stl
+│   │   ├── ShellC Cut Flat
+│   │   │   ├── LShellALeft.stl
+│   │   │   ├── LShellCBase.stl
+│   │   │   ├── LShellCMiddle.stl
+│   │   │   └── LShellCRight.stl
+│   │   └── ShellC Cut Flat.txt
+│   ├── LBatteryBox
+│   │   ├── BatHarnessx2.stl
+│   │   ├── BattHarnessInsertx2.stl
+│   │   ├── LBattCableScrewx2.stl
+│   │   ├── LBatteryBoxFront.stl
+│   │   └── LBatteryBoxMain.stl
+│   ├── LStaticFrame option
+│   │   ├── LStaticFrameA.stl
+│   │   └── LStaticFrameB.stl
+│   └── LSuspensionDrive option
+│       ├── 3.25 inch vex option
+│       │   ├── 325insertsx2.stl
+│       │   ├── LOmniFrameA325.stl
+│       │   └── LOmniframeB325.stl
+│       ├── LHubSideA.stl
+│       ├── LHubSideB.stl
+│       ├── LOmniFrameA.stl
+│       ├── LOmniframeB.stl
+│       ├── LOmniInsertx2.stl
+│       ├── LSuspensionDriveBase.stl
+│       ├── Option - Shortbolt LHubSideA.stl
+│       └── Option Shortbolt LHubSideB.stl
+├── MK4 Astromech Drive Options.pdf
+├── MK4 Astromech Feet Shells + Battery Box.pdf
+└── RightFoot
+    ├── RBaseShell
+    │   ├── LBatKnurlShell-end.stl
+    │   ├── RBaseStripA.stl
+    │   ├── RBaseStripB.stl
+    │   ├── RShellA.stl
+    │   ├── RShellB.stl
+    │   ├── RShellC.stl
+    │   ├── RStripA.stl
+    │   ├── RStripB.stl
+    │   ├── RTopFrame.stl
+    │   ├── SecuringPin M6x75.stl
+    │   ├── ShellC Cut Flat
+    │   │   ├── RShellALeft.stl
+    │   │   ├── RShellCBase.stl
+    │   │   ├── RShellCMiddle.stl
+    │   │   └── RShellCRight.stl
+    │   └── ShellC Cut Flat.txt
+    ├── RBatteryBox
+    │   ├── BatHarnessx2.stl
+    │   ├── BattHarnessInsertx2.stl
+    │   ├── RBattCableScrewx2.stl
+    │   ├── RBatteryBoxMain.stl
+    │   └── RBatteryBoxPlate.stl
+    ├── RStaticFrame option
+    │   ├── RStaticFrameA.stl
+    │   └── RStaticFrameB.stl
+    └── RSuspensionDrive option
+        ├── 3.25 inch Vex option
+        │   ├── 325insertsx2.stl
+        │   ├── ROmniFrameA325.stl
+        │   └── ROmniframeB325.stl
+        ├── Option - Shortbolt RHubSideA.stl
+        ├── Option - Shortbolt RHubSideB.stl
+        ├── RHubSideA.stl
+        ├── RHubSideB.stl
+        ├── ROmniFrameA.stl
+        ├── ROmniframeB.stl
+        ├── ROmniInsertx2.stl
+        └── RSuspensionDriveBase.stl
+
+146 directories, 781 files

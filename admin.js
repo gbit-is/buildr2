@@ -29,16 +29,14 @@ function captureElements() {
   elements.tableTools = document.querySelector("#tableTools");
   elements.tableSection = document.querySelector("#tableSection");
   elements.tableVariantPanel = document.querySelector("#tableVariantPanel");
-  elements.tableVariantOption = document.querySelector("#tableVariantOption");
-  elements.tableVariantChoiceList = document.querySelector("#tableVariantChoiceList");
+  elements.tableVariantGroups = document.querySelector("#tableVariantGroups");
   elements.tableCategory = document.querySelector("#tableCategory");
   elements.partsTablePanel = document.querySelector("#partsTablePanel");
   elements.addPartButton = document.querySelector("#addPartButton");
   elements.bulkTools = document.querySelector("#bulkTools");
   elements.bulkSection = document.querySelector("#bulkSection");
   elements.bulkVariantPanel = document.querySelector("#bulkVariantPanel");
-  elements.bulkVariantOption = document.querySelector("#bulkVariantOption");
-  elements.bulkVariantChoiceList = document.querySelector("#bulkVariantChoiceList");
+  elements.bulkVariantGroups = document.querySelector("#bulkVariantGroups");
   elements.bulkCategory = document.querySelector("#bulkCategory");
   elements.bulkParts = document.querySelector("#bulkParts");
   elements.appendPartsButton = document.querySelector("#appendPartsButton");
@@ -72,21 +70,16 @@ function bindEvents() {
     renderPartsTable();
   });
 
-  elements.tableVariantOption.addEventListener("change", () => {
-    renderTableVariantChoiceOptions();
-    renderPartsTable();
-  });
-
   elements.bulkSection.addEventListener("change", () => {
     renderVariantControls();
   });
 
-  elements.bulkVariantOption.addEventListener("change", () => {
-    renderVariantChoiceOptions();
+  elements.tableVariantGroups.addEventListener("change", () => {
+    renderPartsTable();
   });
 
-  elements.tableVariantChoiceList.addEventListener("change", () => {
-    renderPartsTable();
+  elements.bulkVariantGroups.addEventListener("change", () => {
+    // selections are read lazily when appending/importing
   });
 
   elements.appendPartsButton.addEventListener("click", () => {
@@ -217,6 +210,8 @@ function render(sessionInfo = null) {
     state.visiblePartRows = [];
     elements.bulkVariantPanel.classList.add("hidden");
     elements.tableVariantPanel.classList.add("hidden");
+    elements.bulkVariantGroups.innerHTML = "";
+    elements.tableVariantGroups.innerHTML = "";
     return;
   }
 
@@ -255,6 +250,8 @@ function renderCurrentConfig() {
     state.visiblePartRows = [];
     elements.bulkVariantPanel.classList.add("hidden");
     elements.tableVariantPanel.classList.add("hidden");
+    elements.bulkVariantGroups.innerHTML = "";
+    elements.tableVariantGroups.innerHTML = "";
     return;
   }
 
@@ -297,16 +294,12 @@ function renderVariantControls() {
 
   if (!options.length) {
     elements.bulkVariantPanel.classList.add("hidden");
-    elements.bulkVariantOption.innerHTML = "";
-    elements.bulkVariantChoiceList.innerHTML = "";
+    elements.bulkVariantGroups.innerHTML = "";
     return;
   }
 
   elements.bulkVariantPanel.classList.remove("hidden");
-  elements.bulkVariantOption.innerHTML = options
-    .map((option) => `<option value="${option.id}">${option.label}</option>`)
-    .join("");
-  renderVariantChoiceOptions();
+  elements.bulkVariantGroups.innerHTML = renderVariantGroups("bulk", options);
 }
 
 function renderTableVariantControls() {
@@ -315,54 +308,36 @@ function renderTableVariantControls() {
 
   if (!options.length) {
     elements.tableVariantPanel.classList.add("hidden");
-    elements.tableVariantOption.innerHTML = "";
-    elements.tableVariantChoiceList.innerHTML = "";
+    elements.tableVariantGroups.innerHTML = "";
     return;
   }
 
   elements.tableVariantPanel.classList.remove("hidden");
-  elements.tableVariantOption.innerHTML = options
-    .map((option) => `<option value="${option.id}">${option.label}</option>`)
-    .join("");
-  renderTableVariantChoiceOptions();
+  elements.tableVariantGroups.innerHTML = renderVariantGroups("table", options);
 }
 
-function renderTableVariantChoiceOptions() {
-  const section = getSelectedTableSection();
-  const optionId = elements.tableVariantOption.value;
-  const option = section?.options?.find((item) => item.id === optionId) ?? section?.options?.[0];
+function renderVariantGroups(prefix, options) {
+  return options
+    .map((option) => {
+      const groupName = `${prefix}-variant-${option.id}`;
+      const choices = option.choices
+        .map((choice) => renderVariantChoiceLine(groupName, choice, choice.id === option.defaultChoiceId, option.id))
+        .join("");
 
-  if (!option) {
-    elements.tableVariantChoiceList.innerHTML = "";
-    return;
-  }
-
-  elements.tableVariantOption.value = option.id;
-  elements.tableVariantChoiceList.innerHTML = option.choices
-    .map((choice) => renderVariantChoiceLine("table-variant-choice", choice, choice.id === option.defaultChoiceId))
-    .join("");
-}
-
-function renderVariantChoiceOptions() {
-  const section = getSelectedBulkSection();
-  const optionId = elements.bulkVariantOption.value;
-  const option = section?.options?.find((item) => item.id === optionId) ?? section?.options?.[0];
-
-  if (!option) {
-    elements.bulkVariantChoiceList.innerHTML = "";
-    return;
-  }
-
-  elements.bulkVariantOption.value = option.id;
-  elements.bulkVariantChoiceList.innerHTML = option.choices
-    .map((choice) => renderVariantChoiceLine("bulk-variant-choice", choice, choice.id === option.defaultChoiceId))
+      return `
+        <section class="variant-group" data-option-id="${option.id}">
+          <div class="variant-group-title">${escapeHtml(option.label)}</div>
+          <div class="variant-choice-list">${choices}</div>
+        </section>
+      `;
+    })
     .join("");
 }
 
-function renderVariantChoiceLine(groupName, choice, checked) {
+function renderVariantChoiceLine(groupName, choice, checked, optionId) {
   return `
     <label class="variant-choice-line">
-      <input type="radio" name="${groupName}" value="${choice.id}" ${checked ? "checked" : ""} />
+      <input type="radio" name="${groupName}" value="${choice.id}" data-option-id="${optionId}" ${checked ? "checked" : ""} />
       <span>${escapeHtml(choice.label)}</span>
     </label>
   `;
@@ -397,7 +372,7 @@ function appendBulkParts() {
   const bulkRequirement = buildBulkRequirement(section);
 
   lines.forEach((line) => {
-    const [nameRaw, filesRaw = "", notesRaw = ""] = line.split("|").map((part) => part.trim());
+    const [nameRaw, filesRaw = "", notesRaw = "", quantityRaw = ""] = line.split("|").map((part) => part.trim());
     const name = nameRaw;
     if (!name) {
       return;
@@ -421,6 +396,11 @@ function appendBulkParts() {
       nextPart.notes = notesRaw;
     }
 
+    const quantity = parsePositiveQuantity(quantityRaw);
+    if (quantity > 1) {
+      nextPart.quantity = quantity;
+    }
+
     if (bulkRequirement) {
       nextPart.requirements = bulkRequirement;
     }
@@ -441,15 +421,7 @@ function buildBulkRequirement(section) {
     return null;
   }
 
-  const optionId = elements.bulkVariantOption.value;
-  const choiceId = getCheckedVariantChoice(elements.bulkVariantChoiceList);
-  if (!optionId || !choiceId) {
-    return null;
-  }
-
-  return {
-    [optionId]: [choiceId]
-  };
+  return buildRequirementsFromContainer(elements.bulkVariantGroups);
 }
 
 function getSelectedBulkSection() {
@@ -501,6 +473,7 @@ function renderPartsTable() {
         <td><input data-row-index="${state.visiblePartRows.length - 1}" data-field="id" value="${escapeHtml(part.id || "")}" /></td>
         <td><input data-row-index="${state.visiblePartRows.length - 1}" data-field="name" value="${escapeHtml(part.name || "")}" /></td>
         <td><input data-row-index="${state.visiblePartRows.length - 1}" data-field="files" value="${escapeHtml((part.files || []).join(", "))}" /></td>
+        <td><input type="number" min="1" step="1" data-row-index="${state.visiblePartRows.length - 1}" data-field="quantity" value="${getPartQuantityValue(part)}" /></td>
         <td><textarea data-row-index="${state.visiblePartRows.length - 1}" data-field="notes">${escapeHtml(part.notes || "")}</textarea></td>
         <td>${renderRequirementBadge(part.requirements, variantRequirement)}</td>
         <td class="row-actions"><button class="ghost-button" data-delete-row="${state.visiblePartRows.length - 1}">Delete</button></td>
@@ -520,6 +493,7 @@ function renderPartsTable() {
           <th>ID</th>
           <th>Name</th>
           <th>Files</th>
+          <th>Qty</th>
           <th>Notes</th>
           <th>Variant</th>
           <th>Actions</th>
@@ -588,6 +562,13 @@ function handleTableInput(event) {
       .split(",")
       .map((item) => item.trim())
       .filter(Boolean);
+  } else if (field === "quantity") {
+    const quantity = parsePositiveQuantity(target.value);
+    if (quantity > 1) {
+      part.quantity = quantity;
+    } else {
+      delete part.quantity;
+    }
   } else if (field === "notes") {
     if (target.value.trim()) {
       part.notes = target.value;
@@ -654,15 +635,7 @@ function buildTableRequirement(section) {
     return null;
   }
 
-  const optionId = elements.tableVariantOption.value;
-  const choiceId = getCheckedVariantChoice(elements.tableVariantChoiceList);
-  if (!optionId || !choiceId) {
-    return null;
-  }
-
-  return {
-    [optionId]: [choiceId]
-  };
+  return buildRequirementsFromContainer(elements.tableVariantGroups);
 }
 
 async function saveCurrentConfig() {
@@ -714,8 +687,32 @@ function updateEditorFromConfig(config) {
   state.currentConfig.config = config;
 }
 
-function getCheckedVariantChoice(container) {
-  return container.querySelector('input[type="radio"]:checked')?.value ?? "";
+function parsePositiveQuantity(value) {
+  const parsed = Number.parseInt(String(value || "").trim(), 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
+}
+
+function getPartQuantityValue(part) {
+  return parsePositiveQuantity(part?.quantity ?? 1);
+}
+
+function buildRequirementsFromContainer(container) {
+  const checkedInputs = Array.from(container.querySelectorAll('input[type="radio"]:checked'));
+  if (!checkedInputs.length) {
+    return null;
+  }
+
+  const requirements = {};
+  checkedInputs.forEach((input) => {
+    const optionId = input.dataset.optionId;
+    if (!optionId) {
+      return;
+    }
+
+    requirements[optionId] = [input.value];
+  });
+
+  return Object.keys(requirements).length ? requirements : null;
 }
 
 function slugify(value) {

@@ -78,7 +78,7 @@
 
 .variant-panel {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 12px;
 }
 
@@ -95,6 +95,24 @@
   border-radius: var(--radius-md);
   border: 1px solid rgba(64, 56, 40, 0.08);
   background: rgba(255, 255, 255, 0.72);
+}
+
+.variant-groups {
+  display: grid;
+  gap: 12px;
+}
+
+.variant-group {
+  padding: 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(64, 56, 40, 0.08);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.variant-group-title {
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 0.92rem;
 }
 
 .variant-choice-line {
@@ -150,10 +168,6 @@
 
 @media (max-width: 1080px) {
   .admin-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .variant-panel {
     grid-template-columns: 1fr;
   }
 
