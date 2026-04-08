@@ -1,19 +1,22 @@
 :root {
-  --bg: #f3f0e8;
-  --panel: rgba(255, 252, 245, 0.84);
-  --panel-border: rgba(64, 56, 40, 0.12);
-  --text: #1e1d1a;
-  --muted: #675f4f;
-  --accent: #0d7c86;
-  --accent-strong: #095f66;
-  --accent-soft: rgba(13, 124, 134, 0.12);
-  --warm: #f6a43a;
-  --success: #2f7d4b;
-  --danger: #9c3b35;
-  --shadow: 0 24px 60px rgba(42, 35, 24, 0.12);
-  --radius-lg: 28px;
-  --radius-md: 18px;
-  --radius-sm: 12px;
+  --bg: #0a1822;
+  --bg-grid: rgba(120, 174, 210, 0.08);
+  --panel: rgba(10, 27, 40, 0.84);
+  --panel-strong: rgba(7, 19, 28, 0.94);
+  --panel-border: rgba(115, 174, 210, 0.2);
+  --panel-highlight: rgba(182, 225, 255, 0.08);
+  --text: #edf7ff;
+  --muted: #90aabd;
+  --accent: #4ab4d9;
+  --accent-strong: #7fd8ff;
+  --accent-soft: rgba(74, 180, 217, 0.14);
+  --warm: #ffb347;
+  --success: #70d38b;
+  --danger: #f06e62;
+  --shadow: 0 28px 70px rgba(0, 0, 0, 0.42);
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
 }
 
 * {
@@ -26,9 +29,12 @@ body {
   font-family: "Space Grotesk", sans-serif;
   color: var(--text);
   background:
-    radial-gradient(circle at top left, rgba(13, 124, 134, 0.14), transparent 30%),
-    radial-gradient(circle at bottom right, rgba(246, 164, 58, 0.18), transparent 25%),
-    linear-gradient(180deg, #f7f4ee 0%, #efe9dc 100%);
+    linear-gradient(rgba(120, 174, 210, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120, 174, 210, 0.07) 1px, transparent 1px),
+    radial-gradient(circle at top left, rgba(74, 180, 217, 0.2), transparent 26%),
+    radial-gradient(circle at bottom right, rgba(255, 179, 71, 0.16), transparent 24%),
+    linear-gradient(180deg, #09141d 0%, #0f2432 45%, #122b3c 100%);
+  background-size: 34px 34px, 34px 34px, auto, auto, auto;
   overflow: hidden;
 }
 
@@ -55,7 +61,7 @@ select {
 .part-card,
 .droid-card,
 .option-card {
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px) saturate(130%);
 }
 
 .topbar {
@@ -66,8 +72,21 @@ select {
   padding: 24px 28px;
   border: 1px solid var(--panel-border);
   border-radius: var(--radius-lg);
-  background: var(--panel);
+  background:
+    linear-gradient(180deg, rgba(18, 45, 63, 0.94), rgba(9, 24, 36, 0.92)),
+    var(--panel);
   box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.topbar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, transparent, rgba(127, 216, 255, 0.08), transparent);
+  pointer-events: none;
 }
 
 .topbar h1,
@@ -80,7 +99,7 @@ select {
   text-transform: uppercase;
   letter-spacing: 0.16em;
   font-size: 0.72rem;
-  color: var(--muted);
+  color: var(--accent-strong);
 }
 
 .auth-panel {
@@ -107,7 +126,9 @@ select {
 }
 
 .panel {
-  background: var(--panel);
+  background:
+    linear-gradient(180deg, rgba(18, 36, 50, 0.92), rgba(7, 19, 29, 0.9)),
+    var(--panel);
   border: 1px solid var(--panel-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
@@ -150,23 +171,27 @@ select {
 
 .progress-pill {
   padding: 10px 12px;
-  background: rgba(255, 255, 255, 0.74);
+  background: rgba(255, 255, 255, 0.06);
   border-radius: 999px;
+  border: 1px solid rgba(127, 216, 255, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
 }
 
 .primary-button,
 .ghost-button,
 .pill-button {
-  border: none;
   border-radius: 999px;
   padding: 12px 16px;
   cursor: pointer;
-  transition: transform 140ms ease, background 140ms ease, color 140ms ease;
+  transition: transform 140ms ease, background 140ms ease, color 140ms ease, border-color 140ms ease;
+  border: 1px solid transparent;
 }
 
 .primary-button {
-  background: var(--accent);
-  color: white;
+  background: linear-gradient(180deg, #58c6eb 0%, #2d94bf 100%);
+  color: #03131d;
+  border-color: rgba(173, 232, 255, 0.28);
+  font-weight: 700;
 }
 
 .primary-button:hover,
@@ -176,14 +201,15 @@ select {
 }
 
 .ghost-button {
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.04);
   color: var(--text);
-  border: 1px solid rgba(64, 56, 40, 0.12);
+  border: 1px solid rgba(127, 216, 255, 0.16);
 }
 
 .pill-button {
-  background: var(--accent-soft);
+  background: rgba(74, 180, 217, 0.12);
   color: var(--accent-strong);
+  border-color: rgba(74, 180, 217, 0.28);
 }
 
 .hidden {
@@ -196,8 +222,8 @@ select {
   margin-bottom: 18px;
   padding: 18px;
   border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(64, 56, 40, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(127, 216, 255, 0.14);
 }
 
 .new-droid-form label,
@@ -212,10 +238,11 @@ input,
 select {
   width: 100%;
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(64, 56, 40, 0.18);
+  border: 1px solid rgba(127, 216, 255, 0.18);
   padding: 12px 14px;
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(5, 19, 28, 0.82);
   color: var(--text);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .droid-list,
@@ -230,19 +257,36 @@ select {
 .part-card,
 .option-card,
 .category-block {
-  border: 1px solid rgba(64, 56, 40, 0.1);
+  border: 1px solid rgba(127, 216, 255, 0.12);
   border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.76);
+  background:
+    linear-gradient(180deg, rgba(22, 44, 61, 0.82), rgba(11, 24, 35, 0.86));
 }
 
 .droid-card {
   padding: 16px;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
 .droid-card.active {
-  border-color: rgba(13, 124, 134, 0.4);
-  box-shadow: inset 0 0 0 1px rgba(13, 124, 134, 0.25);
+  border-color: rgba(127, 216, 255, 0.4);
+  box-shadow:
+    inset 0 0 0 1px rgba(127, 216, 255, 0.22),
+    0 0 0 1px rgba(74, 180, 217, 0.12);
+}
+
+.droid-card.active::before,
+.part-card::before,
+.option-card::before,
+.category-block::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--accent-strong), rgba(255, 179, 71, 0.9));
+  opacity: 0.9;
 }
 
 .droid-card header,
@@ -278,7 +322,7 @@ select {
   height: 11px;
   border-radius: 50%;
   display: inline-block;
-  background: rgba(64, 56, 40, 0.18);
+  background: rgba(127, 216, 255, 0.22);
 }
 
 .status-dot.complete {
@@ -291,20 +335,18 @@ select {
   place-items: center;
   border-radius: 24px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(251, 247, 237, 0.88)),
-    repeating-linear-gradient(
-      135deg,
-      rgba(13, 124, 134, 0.04),
-      rgba(13, 124, 134, 0.04) 16px,
-      transparent 16px,
-      transparent 32px
-    );
-  border: 1px solid rgba(64, 56, 40, 0.08);
+    linear-gradient(rgba(120, 174, 210, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120, 174, 210, 0.08) 1px, transparent 1px),
+    radial-gradient(circle at 50% 10%, rgba(127, 216, 255, 0.08), transparent 32%),
+    linear-gradient(180deg, rgba(10, 30, 44, 0.96), rgba(7, 18, 28, 0.94));
+  background-size: 30px 30px, 30px 30px, auto, auto;
+  border: 1px solid rgba(127, 216, 255, 0.16);
   padding: 20px;
   width: fit-content;
   max-width: 100%;
   flex: 1;
   align-self: center;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
 }
 
 .empty-state {
@@ -325,7 +367,8 @@ select {
   object-fit: contain;
   display: block;
   border-radius: 28px;
-  box-shadow: 0 30px 50px rgba(27, 31, 33, 0.12);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.34);
+  border: 1px solid rgba(127, 216, 255, 0.08);
 }
 
 .droid-hotspots {
@@ -346,16 +389,16 @@ select {
 }
 
 .hotspot-shape {
-  fill: rgba(13, 124, 134, 0.12);
-  stroke: rgba(13, 124, 134, 0.38);
+  fill: rgba(74, 180, 217, 0.1);
+  stroke: rgba(127, 216, 255, 0.62);
   stroke-width: 4;
 }
 
 .droid-hotspot:hover .hotspot-shape,
 .droid-hotspot.is-active .hotspot-shape,
 .droid-hotspot:focus-visible .hotspot-shape {
-  fill: rgba(246, 164, 58, 0.2);
-  stroke: rgba(246, 164, 58, 0.95);
+  fill: rgba(255, 179, 71, 0.18);
+  stroke: rgba(255, 179, 71, 0.98);
 }
 
 .hotspot-label-group {
@@ -363,8 +406,8 @@ select {
 }
 
 .hotspot-label-bg {
-  fill: rgba(255, 252, 245, 0.92);
-  stroke: rgba(64, 56, 40, 0.08);
+  fill: rgba(6, 20, 30, 0.88);
+  stroke: rgba(127, 216, 255, 0.18);
 }
 
 .hotspot-label {
@@ -385,6 +428,7 @@ select {
 .category-block {
   padding: 16px;
   min-width: 0;
+  position: relative;
 }
 
 .category-block {
@@ -398,6 +442,7 @@ select {
   display: grid;
   gap: 12px;
   min-width: 0;
+  position: relative;
 }
 
 .part-notes,
@@ -412,7 +457,8 @@ select {
   margin-bottom: 6px;
   padding: 5px 8px;
   border-radius: 999px;
-  background: rgba(13, 124, 134, 0.09);
+  background: rgba(74, 180, 217, 0.12);
+  border: 1px solid rgba(127, 216, 255, 0.14);
   max-width: 100%;
   overflow-wrap: anywhere;
 }
@@ -485,8 +531,9 @@ select {
   padding: 7px 10px;
   border-radius: 999px;
   font-size: 0.82rem;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.05);
   color: var(--muted);
+  border: 1px solid rgba(127, 216, 255, 0.14);
 }
 
 .badge.complete {

@@ -30,8 +30,8 @@
 .parts-table-panel {
   overflow: auto;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(64, 56, 40, 0.08);
-  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(127, 216, 255, 0.14);
+  background: linear-gradient(180deg, rgba(20, 42, 58, 0.82), rgba(10, 23, 34, 0.88));
 }
 
 .parts-table {
@@ -52,17 +52,17 @@
   font-size: 0.82rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--muted);
-  background: rgba(243, 240, 232, 0.88);
+  color: var(--accent-strong);
+  background: rgba(10, 27, 40, 0.96);
 }
 
 .parts-table td input,
 .parts-table td textarea {
   width: 100%;
   border-radius: 12px;
-  border: 1px solid rgba(64, 56, 40, 0.12);
+  border: 1px solid rgba(127, 216, 255, 0.16);
   padding: 10px 12px;
-  background: rgba(255, 255, 255, 0.96);
+  background: rgba(7, 19, 28, 0.88);
   color: var(--text);
 }
 
@@ -80,10 +80,11 @@
   display: inline-flex;
   padding: 5px 9px;
   border-radius: 999px;
-  background: rgba(13, 124, 134, 0.1);
+  background: rgba(74, 180, 217, 0.12);
   color: var(--accent-strong);
   font-size: 0.8rem;
   white-space: nowrap;
+  border: 1px solid rgba(127, 216, 255, 0.14);
 }
 
 .variant-panel {
@@ -103,8 +104,8 @@
   gap: 8px;
   padding: 10px;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(64, 56, 40, 0.08);
-  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(127, 216, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .variant-groups {
@@ -115,8 +116,8 @@
 .variant-group {
   padding: 10px;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(64, 56, 40, 0.08);
-  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(127, 216, 255, 0.12);
+  background: linear-gradient(180deg, rgba(21, 41, 57, 0.78), rgba(12, 24, 36, 0.84));
 }
 
 .variant-group-header {
@@ -161,9 +162,9 @@
 .meta-block {
   padding: 14px 16px;
   border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.04);
   color: var(--muted);
-  border: 1px solid rgba(64, 56, 40, 0.08);
+  border: 1px solid rgba(127, 216, 255, 0.12);
   font-size: 0.92rem;
 }
 
@@ -175,8 +176,8 @@
 .admin-list article {
   padding: 14px 16px;
   border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(64, 56, 40, 0.08);
+  background: linear-gradient(180deg, rgba(20, 42, 58, 0.82), rgba(10, 23, 34, 0.88));
+  border: 1px solid rgba(127, 216, 255, 0.12);
 }
 
 .config-editor,
