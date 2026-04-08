@@ -77,6 +77,11 @@ function bindEvents() {
   });
 
   elements.newDroidButton.addEventListener("click", () => {
+    if (!state.profile) {
+      showAuthRequirementMessage();
+      return;
+    }
+
     elements.newDroidForm.classList.toggle("hidden");
     if (!elements.newDroidForm.classList.contains("hidden")) {
       elements.newDroidName.focus();
@@ -179,6 +184,9 @@ async function loadPersistedProfile() {
 
 async function createDroid({ name, typeId }) {
   if (!state.profile || !name || !typeId) {
+    if (!state.profile) {
+      showAuthRequirementMessage();
+    }
     return;
   }
 
@@ -376,6 +384,7 @@ function render() {
 function renderAuth() {
   if (!state.profile) {
     elements.authStatus.textContent = "Sign in with Google or continue locally.";
+    elements.authStatus.classList.remove("auth-status-alert");
     initAuthUi();
     elements.logoutButton.classList.add("hidden");
     elements.guestModeButton.classList.remove("hidden");
@@ -388,9 +397,16 @@ function renderAuth() {
       : "Local-only workspace";
 
   elements.authStatus.textContent = label;
+  elements.authStatus.classList.remove("auth-status-alert");
   elements.googleSignIn.innerHTML = "";
   elements.logoutButton.classList.remove("hidden");
   elements.guestModeButton.classList.add("hidden");
+}
+
+function showAuthRequirementMessage() {
+  elements.authStatus.textContent =
+    "Can't continue until you either sign in with Google or click Continue without login.";
+  elements.authStatus.classList.add("auth-status-alert");
 }
 
 function renderNewDroidTypeOptions() {

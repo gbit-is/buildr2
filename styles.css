@@ -119,6 +119,20 @@ select {
   font-size: 0.86rem;
 }
 
+.auth-status-alert {
+  flex-basis: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(240, 110, 98, 0.5);
+  background: rgba(240, 110, 98, 0.16);
+  color: #fff2ef;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
 .layout {
   display: grid;
   grid-template-columns: minmax(280px, 320px) max-content minmax(0, 1fr);
