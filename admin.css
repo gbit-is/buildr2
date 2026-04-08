@@ -82,6 +82,34 @@
   gap: 12px;
 }
 
+.variant-label {
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.variant-choice-list {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(64, 56, 40, 0.08);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.variant-choice-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 10px;
+}
+
+.variant-choice-line input {
+  width: auto;
+  margin: 0;
+}
+
 .meta-block {
   padding: 14px 16px;
   border-radius: var(--radius-md);

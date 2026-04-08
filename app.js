@@ -448,7 +448,8 @@ function renderCanvas() {
   elements.activeDroidTitle.textContent = droid.name;
   elements.sectionHint.textContent = type.description;
   elements.droidCanvas.classList.remove("empty-state");
-  elements.droidCanvas.innerHTML = buildImageMapMarkup(type, state.activeSectionId);
+  const sectionProgress = buildSectionProgressMap(droid, type);
+  elements.droidCanvas.innerHTML = buildImageMapMarkup(type, state.activeSectionId, sectionProgress);
 
   elements.droidCanvas.querySelectorAll(".droid-hotspot").forEach((hotspot) => {
     hotspot.addEventListener("click", async () => {
@@ -472,11 +473,11 @@ function renderCanvas() {
   });
 }
 
-function buildImageMapMarkup(type, activeSectionId) {
+function buildImageMapMarkup(type, activeSectionId, sectionProgress) {
   const { image, hotspots } = type.visual;
   const hotspotMarkup = hotspots
     .map((hotspot) => {
-      return buildHotspotShapeMarkup(hotspot, activeSectionId);
+      return buildHotspotShapeMarkup(hotspot, activeSectionId, sectionProgress[hotspot.sectionId]);
     })
     .join("");
 
@@ -495,12 +496,12 @@ function buildImageMapMarkup(type, activeSectionId) {
   `;
 }
 
-function buildHotspotShapeMarkup(hotspot, activeSectionId) {
+function buildHotspotShapeMarkup(hotspot, activeSectionId, progress) {
   const isActive = hotspot.sectionId === activeSectionId ? "is-active" : "";
   const label = escapeHtml(hotspot.label || hotspot.sectionId);
   const shape = normalizeHotspotShape(hotspot);
   const shapeMarkup = renderHotspotShape(shape);
-  const labelMarkup = renderHotspotLabel(shape, label);
+  const labelMarkup = renderHotspotLabel(shape, label, progress);
 
   return `
     <g
@@ -573,15 +574,43 @@ function renderHotspotShape(shape) {
   return `<rect class="hotspot-shape" x="${shape.x}" y="${shape.y}" width="${shape.width}" height="${shape.height}" rx="24"></rect>`;
 }
 
-function renderHotspotLabel(shape, label) {
+function renderHotspotLabel(shape, label, progress) {
   const center = getShapeCenter(shape);
-  const labelWidth = Math.max(108, label.length * 8 + 22);
+  const bounds = getShapeBounds(shape);
+  const horizontalPadding = 12;
+  const verticalPadding = 8;
+  const maxLabelWidth = Math.max(44, bounds.width - horizontalPadding);
+  const estimatedWidthAtBaseSize = Math.max(24, label.length * 7.2);
+  const fontSize = clamp((maxLabelWidth - horizontalPadding) / Math.max(label.length, 4) / 0.72, 7, 11);
+  const progressText = progress ? `${progress.percent}% printed` : "0% printed";
+  const progressFontSize = clamp(fontSize - 1.5, 6, 9);
+  const titleTextWidth = estimatedWidthAtBaseSize * (fontSize / 11);
+  const progressTextWidth = Math.max(24, progressText.length * 6.6) * (progressFontSize / 9);
+  const contentWidth = Math.max(titleTextWidth, progressTextWidth);
+  const labelWidth = Math.min(maxLabelWidth, Math.max(40, contentWidth + horizontalPadding));
+  const labelHeight = Math.max(28, Math.min(42, fontSize + progressFontSize + verticalPadding * 2 + 6));
+  const titleY = center.y - 2;
+  const progressY = center.y + progressFontSize + 4;
+
   return `
     <g class="hotspot-label-group" aria-hidden="true">
-      <rect class="hotspot-label-bg" x="${center.x - labelWidth / 2}" y="${center.y - 16}" width="${labelWidth}" height="32" rx="16"></rect>
-      <text class="hotspot-label" x="${center.x}" y="${center.y + 4}" text-anchor="middle">${label}</text>
+      <rect class="hotspot-label-bg" x="${center.x - labelWidth / 2}" y="${center.y - labelHeight / 2}" width="${labelWidth}" height="${labelHeight}" rx="6"></rect>
+      <text class="hotspot-label" x="${center.x}" y="${titleY}" text-anchor="middle" style="font-size:${fontSize}px">${label}</text>
+      <text class="hotspot-progress" x="${center.x}" y="${progressY}" text-anchor="middle" style="font-size:${progressFontSize}px">${progressText}</text>
     </g>
   `;
+}
+
+function buildSectionProgressMap(droid, type) {
+  return Object.fromEntries(
+    type.sections.map((section) => {
+      const visibleParts = getVisibleParts(section, droid.optionSelections?.[section.id] ?? {});
+      const total = visibleParts.length;
+      const done = visibleParts.filter((part) => droid.printedParts?.[part.id]).length;
+      const percent = total ? Math.round((done / total) * 100) : 0;
+      return [section.id, { done, total, percent }];
+    })
+  );
 }
 
 function getShapeCenter(shape) {
@@ -613,6 +642,48 @@ function getShapeCenter(shape) {
     x: shape.x + shape.width / 2,
     y: shape.y + shape.height / 2
   };
+}
+
+function getShapeBounds(shape) {
+  if (shape.type === "circle") {
+    return {
+      x: shape.cx - shape.r,
+      y: shape.cy - shape.r,
+      width: shape.r * 2,
+      height: shape.r * 2
+    };
+  }
+
+  if (shape.type === "poly") {
+    const xs = [];
+    const ys = [];
+    for (let index = 0; index < shape.points.length; index += 2) {
+      xs.push(shape.points[index]);
+      ys.push(shape.points[index + 1]);
+    }
+
+    const minX = Math.min(...xs);
+    const maxX = Math.max(...xs);
+    const minY = Math.min(...ys);
+    const maxY = Math.max(...ys);
+    return {
+      x: minX,
+      y: minY,
+      width: maxX - minX,
+      height: maxY - minY
+    };
+  }
+
+  return {
+    x: shape.x,
+    y: shape.y,
+    width: shape.width,
+    height: shape.height
+  };
+}
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
 }
 
 function updateActiveRegionState() {

@@ -30,7 +30,7 @@ function captureElements() {
   elements.tableSection = document.querySelector("#tableSection");
   elements.tableVariantPanel = document.querySelector("#tableVariantPanel");
   elements.tableVariantOption = document.querySelector("#tableVariantOption");
-  elements.tableVariantChoice = document.querySelector("#tableVariantChoice");
+  elements.tableVariantChoiceList = document.querySelector("#tableVariantChoiceList");
   elements.tableCategory = document.querySelector("#tableCategory");
   elements.partsTablePanel = document.querySelector("#partsTablePanel");
   elements.addPartButton = document.querySelector("#addPartButton");
@@ -38,7 +38,7 @@ function captureElements() {
   elements.bulkSection = document.querySelector("#bulkSection");
   elements.bulkVariantPanel = document.querySelector("#bulkVariantPanel");
   elements.bulkVariantOption = document.querySelector("#bulkVariantOption");
-  elements.bulkVariantChoice = document.querySelector("#bulkVariantChoice");
+  elements.bulkVariantChoiceList = document.querySelector("#bulkVariantChoiceList");
   elements.bulkCategory = document.querySelector("#bulkCategory");
   elements.bulkParts = document.querySelector("#bulkParts");
   elements.appendPartsButton = document.querySelector("#appendPartsButton");
@@ -77,16 +77,16 @@ function bindEvents() {
     renderPartsTable();
   });
 
-  elements.tableVariantChoice.addEventListener("change", () => {
-    renderPartsTable();
-  });
-
   elements.bulkSection.addEventListener("change", () => {
     renderVariantControls();
   });
 
   elements.bulkVariantOption.addEventListener("change", () => {
     renderVariantChoiceOptions();
+  });
+
+  elements.tableVariantChoiceList.addEventListener("change", () => {
+    renderPartsTable();
   });
 
   elements.appendPartsButton.addEventListener("click", () => {
@@ -216,6 +216,7 @@ function render(sessionInfo = null) {
     elements.partsTablePanel.innerHTML = "";
     state.visiblePartRows = [];
     elements.bulkVariantPanel.classList.add("hidden");
+    elements.tableVariantPanel.classList.add("hidden");
     return;
   }
 
@@ -297,7 +298,7 @@ function renderVariantControls() {
   if (!options.length) {
     elements.bulkVariantPanel.classList.add("hidden");
     elements.bulkVariantOption.innerHTML = "";
-    elements.bulkVariantChoice.innerHTML = "";
+    elements.bulkVariantChoiceList.innerHTML = "";
     return;
   }
 
@@ -315,7 +316,7 @@ function renderTableVariantControls() {
   if (!options.length) {
     elements.tableVariantPanel.classList.add("hidden");
     elements.tableVariantOption.innerHTML = "";
-    elements.tableVariantChoice.innerHTML = "";
+    elements.tableVariantChoiceList.innerHTML = "";
     return;
   }
 
@@ -332,16 +333,13 @@ function renderTableVariantChoiceOptions() {
   const option = section?.options?.find((item) => item.id === optionId) ?? section?.options?.[0];
 
   if (!option) {
-    elements.tableVariantChoice.innerHTML = "";
+    elements.tableVariantChoiceList.innerHTML = "";
     return;
   }
 
   elements.tableVariantOption.value = option.id;
-  elements.tableVariantChoice.innerHTML = option.choices
-    .map((choice) => {
-      const selected = choice.id === option.defaultChoiceId ? "selected" : "";
-      return `<option value="${choice.id}" ${selected}>${choice.label}</option>`;
-    })
+  elements.tableVariantChoiceList.innerHTML = option.choices
+    .map((choice) => renderVariantChoiceLine("table-variant-choice", choice, choice.id === option.defaultChoiceId))
     .join("");
 }
 
@@ -351,17 +349,23 @@ function renderVariantChoiceOptions() {
   const option = section?.options?.find((item) => item.id === optionId) ?? section?.options?.[0];
 
   if (!option) {
-    elements.bulkVariantChoice.innerHTML = "";
+    elements.bulkVariantChoiceList.innerHTML = "";
     return;
   }
 
   elements.bulkVariantOption.value = option.id;
-  elements.bulkVariantChoice.innerHTML = option.choices
-    .map((choice) => {
-      const selected = choice.id === option.defaultChoiceId ? "selected" : "";
-      return `<option value="${choice.id}" ${selected}>${choice.label}</option>`;
-    })
+  elements.bulkVariantChoiceList.innerHTML = option.choices
+    .map((choice) => renderVariantChoiceLine("bulk-variant-choice", choice, choice.id === option.defaultChoiceId))
     .join("");
+}
+
+function renderVariantChoiceLine(groupName, choice, checked) {
+  return `
+    <label class="variant-choice-line">
+      <input type="radio" name="${groupName}" value="${choice.id}" ${checked ? "checked" : ""} />
+      <span>${escapeHtml(choice.label)}</span>
+    </label>
+  `;
 }
 
 function appendBulkParts() {
@@ -438,7 +442,7 @@ function buildBulkRequirement(section) {
   }
 
   const optionId = elements.bulkVariantOption.value;
-  const choiceId = elements.bulkVariantChoice.value;
+  const choiceId = getCheckedVariantChoice(elements.bulkVariantChoiceList);
   if (!optionId || !choiceId) {
     return null;
   }
@@ -651,7 +655,7 @@ function buildTableRequirement(section) {
   }
 
   const optionId = elements.tableVariantOption.value;
-  const choiceId = elements.tableVariantChoice.value;
+  const choiceId = getCheckedVariantChoice(elements.tableVariantChoiceList);
   if (!optionId || !choiceId) {
     return null;
   }
@@ -708,6 +712,10 @@ function parseEditorConfig(silent = false) {
 function updateEditorFromConfig(config) {
   elements.configEditor.value = `${JSON.stringify(config, null, 2)}\n`;
   state.currentConfig.config = config;
+}
+
+function getCheckedVariantChoice(container) {
+  return container.querySelector('input[type="radio"]:checked')?.value ?? "";
 }
 
 function slugify(value) {

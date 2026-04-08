@@ -102,6 +102,33 @@ If the selected section has options, the admin importer shows a variant picker a
 
 The parts table uses the same section/category/variant idea, so you can switch to a section like `Body`, choose `printer_size = small`, and then add or edit only the rows relevant to that variant while still seeing shared rows.
 
+## STL helper script
+
+To generate bulk-import lines from a folder of `.stl` files, use:
+
+```bash
+python3 scripts/stl_to_parts.py /path/to/stl/folder
+```
+
+Example output:
+
+```text
+Body Core A | body/small/body-core-a.stl
+Body Core B | body/small/body-core-b.stl
+```
+
+You can paste that output directly into the admin `Paste parts` box.
+
+Useful options:
+
+```bash
+python3 scripts/stl_to_parts.py /path/to/stl/folder --base /path/to/project/root
+python3 scripts/stl_to_parts.py /path/to/stl/folder --flat
+```
+
+- `--base` makes emitted paths relative to a different root
+- `--flat` emits only filenames instead of nested paths
+
 ## Saving behavior
 
 If you use guest mode, workspace data is saved in your browser's local storage.

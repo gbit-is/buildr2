@@ -346,6 +346,12 @@ select {
   text-transform: uppercase;
 }
 
+.hotspot-progress {
+  fill: var(--muted);
+  font-family: "IBM Plex Mono", monospace;
+  letter-spacing: 0.03em;
+}
+
 .option-card,
 .category-block {
   padding: 16px;
