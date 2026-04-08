@@ -69,7 +69,7 @@ select {
   justify-content: space-between;
   gap: 24px;
   align-items: flex-start;
-  padding: 24px 28px;
+  padding: 16px 22px;
   border: 1px solid var(--panel-border);
   border-radius: var(--radius-lg);
   background:
@@ -95,11 +95,15 @@ select {
 }
 
 .eyebrow {
-  margin: 0 0 6px;
+  margin: 0 0 2px;
   text-transform: uppercase;
   letter-spacing: 0.16em;
-  font-size: 0.72rem;
+  font-size: 0.66rem;
   color: var(--accent-strong);
+}
+
+.eyebrow a {
+  color: #ffffff;
 }
 
 .auth-panel {
@@ -112,7 +116,7 @@ select {
 
 .auth-status {
   color: var(--muted);
-  font-size: 0.92rem;
+  font-size: 0.86rem;
 }
 
 .layout {

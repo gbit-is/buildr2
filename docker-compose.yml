@@ -11,7 +11,18 @@ services:
       PGHOST: db
       PGPORT: 5432
     ports:
-      - "${PORT:-4173}:4173"
+      - "127.0.0.1:${PORT:-4173}:4173"
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=64m
+    pids_limit: 256
+    init: true
+    networks:
+      - public
+      - backend
     restart: unless-stopped
 
   db:
@@ -21,9 +32,19 @@ services:
       POSTGRES_USER: ${PGUSER:-buildr2}
       POSTGRES_PASSWORD: ${PGPASSWORD:-buildr2}
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - buildr2_postgres_data:/var/lib/postgresql/data
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=64m
+    pids_limit: 256
+    init: true
+    networks:
+      - backend
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${PGUSER:-buildr2} -d ${PGDATABASE:-buildr2}"]
       interval: 5s
@@ -33,3 +54,8 @@ services:
 
 volumes:
   buildr2_postgres_data:
+
+networks:
+  public:
+  backend:
+    internal: true

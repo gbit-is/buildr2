@@ -92,6 +92,23 @@ node server.js
 
 In that mode, the Node app runs directly on your machine and talks to the containerized Postgres instance on `127.0.0.1:5432`.
 
+## Container hardening
+
+The Compose files now include a baseline hardening pass:
+
+- the app runs as a non-root user
+- both containers drop all Linux capabilities
+- `no-new-privileges` is enabled
+- published ports are bound to `127.0.0.1` only
+- Postgres sits on an internal backend network
+- small `tmpfs` mounts are used for temporary files
+- PID counts are limited
+
+Important note:
+
+- this reduces blast radius, but Docker is not a perfect host-isolation boundary
+- if you want the strongest separation, run this stack on a dedicated VM or with rootless Docker/Podman rather than relying on Compose hardening alone
+
 ## Admin editor
 
 You can enable `/admin` for specific Google users by launching the server with an allowlist:
