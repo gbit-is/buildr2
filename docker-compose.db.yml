@@ -9,13 +9,6 @@ services:
       - "127.0.0.1:5432:5432"
     volumes:
       - buildr2_postgres_data:/var/lib/postgresql/data
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges:true
-    tmpfs:
-      - /tmp:rw,noexec,nosuid,nodev,size=64m
-    pids_limit: 256
     init: true
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${PGUSER:-buildr2} -d ${PGDATABASE:-buildr2}"]
