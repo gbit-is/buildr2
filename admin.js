@@ -82,6 +82,14 @@ function bindEvents() {
     // selections are read lazily when appending/importing
   });
 
+  elements.tableVariantGroups.addEventListener("click", (event) => {
+    handleVariantAction(event, "table");
+  });
+
+  elements.bulkVariantGroups.addEventListener("click", (event) => {
+    handleVariantAction(event, "bulk");
+  });
+
   elements.appendPartsButton.addEventListener("click", () => {
     appendBulkParts();
   });
@@ -321,12 +329,30 @@ function renderVariantGroups(prefix, options) {
     .map((option) => {
       const groupName = `${prefix}-variant-${option.id}`;
       const choices = option.choices
-        .map((choice) => renderVariantChoiceLine(groupName, choice, choice.id === option.defaultChoiceId, option.id))
+        .map((choice) =>
+          renderVariantChoiceLine(
+            groupName,
+            choice,
+            choice.id === option.defaultChoiceId,
+            option.id,
+            option.choices.length > 1
+          )
+        )
         .join("");
 
       return `
         <section class="variant-group" data-option-id="${option.id}">
-          <div class="variant-group-title">${escapeHtml(option.label)}</div>
+          <div class="variant-group-header">
+            <div class="variant-group-title">${escapeHtml(option.label)}</div>
+            <button
+              type="button"
+              class="pill-button variant-action-button"
+              data-add-variant="${option.id}"
+              data-source="${prefix}"
+            >
+              Add variant
+            </button>
+          </div>
           <div class="variant-choice-list">${choices}</div>
         </section>
       `;
@@ -334,13 +360,161 @@ function renderVariantGroups(prefix, options) {
     .join("");
 }
 
-function renderVariantChoiceLine(groupName, choice, checked, optionId) {
+function renderVariantChoiceLine(groupName, choice, checked, optionId, canDelete) {
   return `
-    <label class="variant-choice-line">
-      <input type="radio" name="${groupName}" value="${choice.id}" data-option-id="${optionId}" ${checked ? "checked" : ""} />
-      <span>${escapeHtml(choice.label)}</span>
-    </label>
+    <div class="variant-choice-line">
+      <label class="variant-choice-select">
+        <input type="radio" name="${groupName}" value="${choice.id}" data-option-id="${optionId}" ${checked ? "checked" : ""} />
+        <span>${escapeHtml(choice.label)}</span>
+      </label>
+      <button
+        type="button"
+        class="ghost-button variant-delete-button"
+        data-delete-variant="${optionId}:${choice.id}"
+        ${canDelete ? "" : "disabled"}
+      >
+        Delete
+      </button>
+    </div>
   `;
+}
+
+function handleVariantAction(event, source) {
+  const addButton = event.target.closest("[data-add-variant]");
+  if (addButton) {
+    addVariantChoice(addButton.dataset.addVariant, source);
+    return;
+  }
+
+  const deleteButton = event.target.closest("[data-delete-variant]");
+  if (deleteButton) {
+    const [optionId, choiceId] = String(deleteButton.dataset.deleteVariant || "").split(":");
+    if (optionId && choiceId) {
+      deleteVariantChoice(optionId, choiceId, source);
+    }
+  }
+}
+
+function addVariantChoice(optionId, source) {
+  const config = parseEditorConfig();
+  const section = source === "table" ? getSelectedTableSection() : getSelectedBulkSection();
+  if (!config || !section) {
+    return;
+  }
+
+  const option = section.options?.find((item) => item.id === optionId);
+  if (!option) {
+    elements.adminStatus.textContent = "Variant option not found.";
+    return;
+  }
+
+  const label = window.prompt(`New variant label for ${option.label}:`);
+  if (!label) {
+    return;
+  }
+
+  const trimmedLabel = label.trim();
+  if (!trimmedLabel) {
+    return;
+  }
+
+  let baseId = slugify(trimmedLabel);
+  if (!baseId) {
+    baseId = `variant-${option.choices.length + 1}`;
+  }
+
+  let nextId = baseId;
+  let index = 2;
+  const existingIds = new Set(option.choices.map((choice) => choice.id));
+  while (existingIds.has(nextId)) {
+    nextId = `${baseId}-${index}`;
+    index += 1;
+  }
+
+  option.choices.push({
+    id: nextId,
+    label: trimmedLabel
+  });
+
+  updateEditorFromConfig(config);
+  renderCurrentConfig();
+  selectVariantChoice(source, optionId, nextId);
+  elements.adminStatus.textContent = `Added variant "${trimmedLabel}" to ${option.label}. Save when ready.`;
+}
+
+function deleteVariantChoice(optionId, choiceId, source) {
+  const config = parseEditorConfig();
+  const section = source === "table" ? getSelectedTableSection() : getSelectedBulkSection();
+  if (!config || !section) {
+    return;
+  }
+
+  const option = section.options?.find((item) => item.id === optionId);
+  if (!option) {
+    elements.adminStatus.textContent = "Variant option not found.";
+    return;
+  }
+
+  if ((option.choices?.length ?? 0) <= 1) {
+    elements.adminStatus.textContent = "Each option must keep at least one variant.";
+    return;
+  }
+
+  const choice = option.choices.find((item) => item.id === choiceId);
+  if (!choice) {
+    return;
+  }
+
+  option.choices = option.choices.filter((item) => item.id !== choiceId);
+  if (option.defaultChoiceId === choiceId) {
+    option.defaultChoiceId = option.choices[0]?.id ?? null;
+  }
+
+  removeVariantChoiceReferences(config, section.id, optionId, choiceId);
+  updateEditorFromConfig(config);
+  renderCurrentConfig();
+  selectVariantChoice(source, optionId, option.defaultChoiceId);
+  elements.adminStatus.textContent = `Deleted variant "${choice.label}" from ${option.label}. Save when ready.`;
+}
+
+function removeVariantChoiceReferences(config, sectionId, optionId, choiceId) {
+  const section = config.sections?.find((item) => item.id === sectionId);
+  if (!section) {
+    return;
+  }
+
+  Object.values(section.categories ?? {}).forEach((parts) => {
+    parts.forEach((part) => {
+      if (!part.requirements?.[optionId]) {
+        return;
+      }
+
+      const nextChoices = part.requirements[optionId].filter((value) => value !== choiceId);
+      if (nextChoices.length) {
+        part.requirements[optionId] = nextChoices;
+      } else {
+        delete part.requirements[optionId];
+      }
+
+      if (!Object.keys(part.requirements).length) {
+        delete part.requirements;
+      }
+    });
+  });
+}
+
+function selectVariantChoice(source, optionId, choiceId) {
+  if (!choiceId) {
+    return;
+  }
+
+  const container = source === "table" ? elements.tableVariantGroups : elements.bulkVariantGroups;
+  const input = container.querySelector(
+    `input[type="radio"][data-option-id="${CSS.escape(optionId)}"][value="${CSS.escape(choiceId)}"]`
+  );
+  if (input) {
+    input.checked = true;
+  }
 }
 
 function appendBulkParts() {

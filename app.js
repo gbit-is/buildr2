@@ -1,6 +1,5 @@
 const LAST_PROFILE_KEY = "buildr2-last-profile";
 const LOCAL_WORKSPACE_KEY = "buildr2-guest-workspace";
-const GOOGLE_PROFILE_KEY = "buildr2-google-profile";
 
 const state = {
   profile: null,
@@ -67,13 +66,12 @@ function bindEvents() {
     }
   });
 
-  elements.logoutButton.addEventListener("click", () => {
-    state.profile = null;
-    state.droids = [];
-    state.activeDroidId = null;
-    state.activeSectionId = null;
-    localStorage.removeItem(LAST_PROFILE_KEY);
-    localStorage.removeItem(GOOGLE_PROFILE_KEY);
+  elements.logoutButton.addEventListener("click", async () => {
+    if (state.profile?.mode === "google") {
+      await logoutGoogleSession();
+    }
+
+    clearActiveProfile();
     render();
   });
 
@@ -100,6 +98,7 @@ function initAuthUi() {
 
   const clientId = window.BUILDR_CONFIG?.googleClientId;
   if (clientId && window.google?.accounts?.id) {
+    elements.googleSignIn.innerHTML = "";
     window.google.accounts.id.initialize({
       client_id: clientId,
       callback: handleGoogleCredential
@@ -117,31 +116,26 @@ function initAuthUi() {
 }
 
 async function handleGoogleCredential(response) {
-  const payload = decodeJwt(response.credential);
-  if (!payload) {
+  const authResponse = await fetch("/api/auth/google", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      credential: response.credential
+    })
+  });
+
+  if (!authResponse.ok) {
+    console.error("Google sign-in failed.");
     return;
   }
 
-  state.profile = {
-    id: `google:${payload.sub}`,
-    name: payload.name || payload.email,
-    email: payload.email,
-    mode: "google"
-  };
-
+  const payload = await authResponse.json();
+  state.profile = payload.user;
   localStorage.setItem(LAST_PROFILE_KEY, state.profile.id);
-  localStorage.setItem(GOOGLE_PROFILE_KEY, JSON.stringify(state.profile));
   await loadWorkspaceState();
   render();
-}
-
-function decodeJwt(token) {
-  try {
-    const [, payload] = token.split(".");
-    return JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
-  } catch {
-    return null;
-  }
 }
 
 async function setGuestProfile() {
@@ -159,6 +153,13 @@ async function setGuestProfile() {
 
 async function loadPersistedProfile() {
   localStorage.removeItem("buildr2-detail-panel-collapsed");
+  const session = await fetchAuthSession();
+  if (session?.authenticated && session.user) {
+    state.profile = session.user;
+    localStorage.setItem(LAST_PROFILE_KEY, state.profile.id);
+    await loadWorkspaceState();
+    return;
+  }
 
   const lastProfile = localStorage.getItem(LAST_PROFILE_KEY);
   if (!lastProfile) {
@@ -171,16 +172,7 @@ async function loadPersistedProfile() {
   }
 
   if (lastProfile.startsWith("google:")) {
-    const savedProfile = readStoredGoogleProfile();
-    if (savedProfile?.id === lastProfile) {
-      state.profile = savedProfile;
-      await loadWorkspaceState();
-      render();
-      return;
-    }
-
     localStorage.removeItem(LAST_PROFILE_KEY);
-    localStorage.removeItem(GOOGLE_PROFILE_KEY);
   }
 }
 
@@ -267,7 +259,7 @@ async function loadWorkspaceState() {
   const workspace =
     state.profile.mode === "guest"
       ? readLocalWorkspace()
-      : await fetchWorkspace(state.profile.id);
+      : await fetchWorkspace();
   state.droids = workspace.droids ?? [];
   normalizeDroidOptionSelections();
   state.activeDroidId = workspace.activeDroidId ?? null;
@@ -291,20 +283,26 @@ async function persistWorkspaceState() {
     return;
   }
 
-  await saveWorkspace(state.profile.id, workspace);
+  await saveWorkspace(workspace);
 }
 
-async function fetchWorkspace(profileId) {
-  const response = await fetch(`/api/workspaces/${encodeURIComponent(profileId)}`);
+async function fetchWorkspace() {
+  const response = await fetch("/api/workspace");
   if (!response.ok) {
-    throw new Error(`Failed to load workspace for ${profileId}`);
+    if (response.status === 401) {
+      clearActiveProfile();
+      render();
+      return emptyWorkspace();
+    }
+
+    throw new Error("Failed to load workspace.");
   }
 
   return response.json();
 }
 
-async function saveWorkspace(profileId, workspace) {
-  const response = await fetch(`/api/workspaces/${encodeURIComponent(profileId)}`, {
+async function saveWorkspace(workspace) {
+  const response = await fetch("/api/workspace", {
     method: "PUT",
     headers: {
       "Content-Type": "application/json"
@@ -313,7 +311,13 @@ async function saveWorkspace(profileId, workspace) {
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to save workspace for ${profileId}`);
+    if (response.status === 401) {
+      clearActiveProfile();
+      render();
+      return;
+    }
+
+    throw new Error("Failed to save workspace.");
   }
 }
 
@@ -329,17 +333,27 @@ function writeLocalWorkspace(workspace) {
   localStorage.setItem(LOCAL_WORKSPACE_KEY, JSON.stringify(workspace));
 }
 
-function readStoredGoogleProfile() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(GOOGLE_PROFILE_KEY));
-    if (!saved || saved.mode !== "google" || !saved.id) {
-      return null;
-    }
-
-    return saved;
-  } catch {
+async function fetchAuthSession() {
+  const response = await fetch("/api/auth/session");
+  if (!response.ok) {
     return null;
   }
+
+  return response.json();
+}
+
+async function logoutGoogleSession() {
+  await fetch("/api/auth/logout", {
+    method: "POST"
+  });
+}
+
+function clearActiveProfile() {
+  state.profile = null;
+  state.droids = [];
+  state.activeDroidId = null;
+  state.activeSectionId = null;
+  localStorage.removeItem(LAST_PROFILE_KEY);
 }
 
 function emptyWorkspace() {
@@ -361,6 +375,7 @@ function render() {
 function renderAuth() {
   if (!state.profile) {
     elements.authStatus.textContent = "Sign in with Google or continue locally.";
+    initAuthUi();
     elements.logoutButton.classList.add("hidden");
     elements.guestModeButton.classList.remove("hidden");
     return;
@@ -372,6 +387,7 @@ function renderAuth() {
       : "Local-only workspace";
 
   elements.authStatus.textContent = label;
+  elements.googleSignIn.innerHTML = "";
   elements.logoutButton.classList.remove("hidden");
   elements.guestModeButton.classList.add("hidden");
 }

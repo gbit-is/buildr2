@@ -1,0 +1,193 @@
+{
+  "id": "r2d2-template",
+  "name": "R2-D2 Template",
+  "description": "Blank R2-D2-style scaffold with sections, hotspots, and options but no parts.",
+  "visual": {
+    "image": {
+      "src": "./assets/r2d2/r2d2-reference.svg",
+      "width": 311,
+      "height": 513,
+      "alt": "R2-D2 build reference"
+    },
+    "hotspots": [
+      {
+        "sectionId": "dome",
+        "shape": "rect",
+        "coords": [270, 1, 56, 141],
+        "label": "DOME"
+      },
+      {
+        "sectionId": "body",
+        "shape": "rect",
+        "coords": [67, 147, 260, 379],
+        "label": "BODY"
+      },
+      {
+        "sectionId": "left-leg",
+        "shape": "rect",
+        "coords": [1, 143, 60, 430],
+        "label": "LEFT LEG"
+      },
+      {
+        "sectionId": "right-leg",
+        "shape": "rect",
+        "coords": [305, 147, 272, 430],
+        "label": "RIGHT LEG"
+      },
+      {
+        "sectionId": "outer-foot-left",
+        "shape": "rect",
+        "coords": [1, 431, 70, 513],
+        "label": "OUTER FOOT LEFT"
+      },
+      {
+        "sectionId": "outer-foot-right",
+        "shape": "rect",
+        "coords": [305, 431, 242, 513],
+        "label": "OUTER FOOT RIGHT"
+      },
+      {
+        "sectionId": "skirt",
+        "shape": "rect",
+        "coords": [86, 382, 235, 410],
+        "label": "SKIRT"
+      },
+      {
+        "sectionId": "middle-leg",
+        "shape": "rect",
+        "coords": [119, 511, 207, 412],
+        "label": "MIDDLE LEG"
+      }
+    ]
+  },
+  "sections": [
+    {
+      "id": "dome",
+      "label": "Dome",
+      "options": [
+        {
+          "id": "build_style",
+          "label": "Build style",
+          "defaultChoiceId": "simple",
+          "choices": [
+            {
+              "id": "simple",
+              "label": "Simple"
+            },
+            {
+              "id": "complex",
+              "label": "Complex"
+            }
+          ]
+        },
+        {
+          "id": "printer_size",
+          "label": "Printer size",
+          "defaultChoiceId": "large",
+          "choices": [
+            {
+              "id": "large",
+              "label": "Large printer"
+            },
+            {
+              "id": "small",
+              "label": "Small printer"
+            }
+          ]
+        }
+      ],
+      "categories": {
+        "main": [],
+        "greebles": []
+      }
+    },
+    {
+      "id": "body",
+      "label": "Body",
+      "options": [
+        {
+          "id": "build_style",
+          "label": "Build style",
+          "defaultChoiceId": "simple",
+          "choices": [
+            {
+              "id": "simple",
+              "label": "Simple"
+            },
+            {
+              "id": "complex",
+              "label": "Complex"
+            }
+          ]
+        },
+        {
+          "id": "printer_size",
+          "label": "Printer size",
+          "defaultChoiceId": "large",
+          "choices": [
+            {
+              "id": "large",
+              "label": "Large printer"
+            },
+            {
+              "id": "small",
+              "label": "Small printer"
+            }
+          ]
+        }
+      ],
+      "categories": {
+        "main": [],
+        "greebles": []
+      }
+    },
+    {
+      "id": "left-leg",
+      "label": "Left Leg",
+      "categories": {
+        "main": [],
+        "greebles": []
+      }
+    },
+    {
+      "id": "right-leg",
+      "label": "Right Leg",
+      "categories": {
+        "main": [],
+        "greebles": []
+      }
+    },
+    {
+      "id": "outer-foot-left",
+      "label": "Outer Foot Left",
+      "categories": {
+        "main": [],
+        "greebles": []
+      }
+    },
+    {
+      "id": "outer-foot-right",
+      "label": "Outer Foot Right",
+      "categories": {
+        "main": [],
+        "greebles": []
+      }
+    },
+    {
+      "id": "skirt",
+      "label": "Skirt",
+      "categories": {
+        "main": [],
+        "greebles": []
+      }
+    },
+    {
+      "id": "middle-leg",
+      "label": "Middle Leg",
+      "categories": {
+        "main": [],
+        "greebles": []
+      }
+    }
+  ]
+}
