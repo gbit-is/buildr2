@@ -150,6 +150,39 @@
   gap: 8px;
 }
 
+.admin-v2-variant-panel,
+.admin-v2-variant-groups {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-v2-variant-group {
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(127, 216, 255, 0.12);
+  background: linear-gradient(180deg, rgba(18, 37, 50, 0.72), rgba(9, 22, 31, 0.84));
+}
+
+.admin-v2-variant-title {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.admin-v2-variant-choice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  color: var(--text);
+}
+
+.admin-v2-variant-choice input {
+  width: auto;
+  margin: 0;
+}
+
 .admin-v2-textarea-field {
   min-width: 0;
 }

@@ -41,6 +41,8 @@ function captureElements() {
   elements.importSection = document.querySelector("#importSection");
   elements.importPath = document.querySelector("#importPath");
   elements.importPathList = document.querySelector("#importPathList");
+  elements.importVariantPanel = document.querySelector("#importVariantPanel");
+  elements.importVariantGroups = document.querySelector("#importVariantGroups");
   elements.importText = document.querySelector("#importText");
   elements.appendImportButton = document.querySelector("#appendImportButton");
   elements.configEditor = document.querySelector("#configEditor");
@@ -75,6 +77,7 @@ function bindEvents() {
 
   elements.importSection.addEventListener("change", () => {
     syncPathInputs();
+    renderImportVariantControls();
   });
 
   elements.addFolderButton.addEventListener("click", () => {
@@ -286,6 +289,7 @@ function renderConfigUi() {
   }
 
   syncPathInputs();
+  renderImportVariantControls();
   renderEditTree();
 }
 
@@ -357,6 +361,42 @@ function syncPathInputs() {
   const importSection = getSelectedImportSection();
   syncPathInput(elements.editPath, elements.editPathList, editSection);
   syncPathInput(elements.importPath, elements.importPathList, importSection);
+}
+
+function renderImportVariantControls() {
+  const section = getSelectedImportSection();
+  const options = section?.options ?? [];
+
+  if (!options.length) {
+    elements.importVariantPanel.classList.add("hidden");
+    elements.importVariantGroups.innerHTML = "";
+    return;
+  }
+
+  elements.importVariantPanel.classList.remove("hidden");
+  elements.importVariantGroups.innerHTML = options
+    .map((option) => {
+      const groupName = `import-variant-${option.id}`;
+      const choices = option.choices
+        .map((choice) => {
+          const checked = choice.id === option.defaultChoiceId ? "checked" : "";
+          return `
+            <label class="admin-v2-variant-choice">
+              <input type="radio" name="${groupName}" value="${choice.id}" data-option-id="${option.id}" ${checked} />
+              <span>${escapeHtml(choice.label)}</span>
+            </label>
+          `;
+        })
+        .join("");
+
+      return `
+        <section class="admin-v2-variant-group">
+          <div class="admin-v2-variant-title">${escapeHtml(option.label)}</div>
+          ${choices}
+        </section>
+      `;
+    })
+    .join("");
 }
 
 function syncPathInput(input, datalist, section) {
@@ -542,6 +582,7 @@ function appendImportParts() {
   const config = getConfig();
   const section = getSelectedImportSection();
   const path = normalizePath(elements.importPath.value);
+  const requirements = buildImportRequirements();
   const lines = elements.importText.value
     .split("\n")
     .map((line) => line.trim())
@@ -577,12 +618,41 @@ function appendImportParts() {
       nextPart.quantity = quantity;
     }
 
+    if (requirements) {
+      nextPart.requirements = cloneRequirements(requirements);
+    }
+
     parts.push(nextPart);
   });
 
   elements.importText.value = "";
   updateStateConfig(config);
   elements.adminStatus.textContent = `Imported ${lines.length} line(s) into ${path.join(" / ")}.`;
+}
+
+function buildImportRequirements() {
+  const checkedInputs = Array.from(elements.importVariantGroups.querySelectorAll('input[type="radio"]:checked'));
+  if (!checkedInputs.length) {
+    return null;
+  }
+
+  const requirements = {};
+  checkedInputs.forEach((input) => {
+    const optionId = input.dataset.optionId;
+    if (!optionId) {
+      return;
+    }
+
+    requirements[optionId] = [input.value];
+  });
+
+  return Object.keys(requirements).length ? requirements : null;
+}
+
+function cloneRequirements(requirements) {
+  return Object.fromEntries(
+    Object.entries(requirements).map(([optionId, values]) => [optionId, [...values]])
+  );
 }
 
 function updatePartField(pathKey, index, field, rawValue) {
