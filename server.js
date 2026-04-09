@@ -84,7 +84,7 @@ async function start() {
     if (ADMIN_ENABLED) {
       console.log(`Admin enabled for: ${Array.from(ADMIN_USERS).join(", ")}`);
     } else {
-      console.log("Admin disabled. Set ADMIN_USERS to enable /admin.");
+      console.log("Admin disabled. Set ADMIN_USERS to enable /old_admin.");
     }
   });
 }
@@ -358,7 +358,7 @@ async function serveStatic(req, res, requestUrl) {
     return serveConfigScript(req, res);
   }
 
-  if (pathname === "/admin") {
+  if (pathname === "/old_admin") {
     pathname = ADMIN_ENABLED ? "/admin.html" : "/index.html";
   }
 

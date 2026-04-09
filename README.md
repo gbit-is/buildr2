@@ -117,7 +117,7 @@ Important note:
 
 ## Admin editor
 
-You can enable `/admin` for specific Google users by launching the server with an allowlist:
+You can enable `/old_admin` for specific Google users by launching the server with an allowlist:
 
 ```bash
 node server.js
@@ -126,7 +126,7 @@ node server.js
 Then open:
 
 ```text
-http://localhost:4173/admin
+http://localhost:4173/old_admin
 ```
 
 Important notes:

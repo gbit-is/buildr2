@@ -1,5 +1,6 @@
 const LAST_PROFILE_KEY = "buildr2-last-profile";
 const LOCAL_WORKSPACE_KEY = "buildr2-guest-workspace";
+const TREE_STATE_KEY = "buildr2-tree-state";
 
 const state = {
   profile: null,
@@ -17,6 +18,7 @@ document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
   captureElements();
+  loadExpandedTreeState();
   await loadCatalog();
   bindEvents();
   await loadPersistedProfile();
@@ -949,6 +951,31 @@ function isTreeNodeExpanded(sectionId, nodeKey) {
 function toggleTreeNode(sectionId, nodeKey) {
   const stateKey = `${sectionId}:${nodeKey}`;
   state.expandedTreeNodes[stateKey] = !isTreeNodeExpanded(sectionId, nodeKey);
+  saveExpandedTreeState();
+}
+
+function loadExpandedTreeState() {
+  try {
+    const raw = localStorage.getItem(TREE_STATE_KEY);
+    if (!raw) {
+      return;
+    }
+
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === "object") {
+      state.expandedTreeNodes = parsed;
+    }
+  } catch (error) {
+    console.warn("Failed to restore tree state.", error);
+  }
+}
+
+function saveExpandedTreeState() {
+  try {
+    localStorage.setItem(TREE_STATE_KEY, JSON.stringify(state.expandedTreeNodes));
+  } catch (error) {
+    console.warn("Failed to save tree state.", error);
+  }
 }
 
 function getVisibleCategoryGroups(section, selectedOptions) {
