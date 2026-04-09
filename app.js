@@ -525,10 +525,7 @@ function renderCanvas() {
 
   elements.droidCanvas.querySelectorAll(".droid-hotspot").forEach((hotspot) => {
     hotspot.addEventListener("click", async () => {
-      state.activeSectionId = hotspot.dataset.sectionId;
-      await persistWorkspaceState();
-      renderSectionDetails();
-      updateActiveRegionState();
+      await setActiveSection(hotspot.dataset.sectionId);
     });
 
     hotspot.addEventListener("keydown", async (event) => {
@@ -537,10 +534,7 @@ function renderCanvas() {
       }
 
       event.preventDefault();
-      state.activeSectionId = hotspot.dataset.sectionId;
-      await persistWorkspaceState();
-      renderSectionDetails();
-      updateActiveRegionState();
+      await setActiveSection(hotspot.dataset.sectionId);
     });
   });
 }
@@ -671,7 +665,12 @@ function renderSectionProgressBoard(type, sectionProgress) {
       const progress = sectionProgress[section.id] ?? { done: 0, total: 0, percent: 0 };
       const meterWidth = Math.max(4, progress.percent);
       return `
-        <article class="section-progress-card">
+        <button
+          type="button"
+          class="section-progress-card"
+          data-section-id="${section.id}"
+          aria-label="Open ${escapeHtml(section.label)}"
+        >
           <div class="section-progress-header">
             <span class="section-progress-name">${escapeHtml(section.label)}</span>
             <span class="section-progress-percent">${progress.percent}%</span>
@@ -680,10 +679,16 @@ function renderSectionProgressBoard(type, sectionProgress) {
             <span class="section-progress-fill" style="width:${meterWidth}%"></span>
           </div>
           <div class="section-progress-meta">${progress.done} / ${progress.total} printed</div>
-        </article>
+        </button>
       `;
     })
     .join("");
+
+  elements.sectionProgressBoard.querySelectorAll("[data-section-id]").forEach((card) => {
+    card.addEventListener("click", async () => {
+      await setActiveSection(card.dataset.sectionId);
+    });
+  });
 }
 
 function readCssNumber(variableName, fallback) {
@@ -696,6 +701,19 @@ function updateActiveRegionState() {
   elements.droidCanvas.querySelectorAll(".droid-hotspot").forEach((node) => {
     node.classList.toggle("is-active", node.dataset.sectionId === state.activeSectionId);
   });
+
+  elements.sectionProgressBoard.querySelectorAll("[data-section-id]").forEach((node) => {
+    const isActive = node.dataset.sectionId === state.activeSectionId;
+    node.classList.toggle("is-active", isActive);
+    node.setAttribute("aria-pressed", isActive ? "true" : "false");
+  });
+}
+
+async function setActiveSection(sectionId) {
+  state.activeSectionId = sectionId;
+  await persistWorkspaceState();
+  renderSectionDetails();
+  updateActiveRegionState();
 }
 
 function renderSectionDetails() {

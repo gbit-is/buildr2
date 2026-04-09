@@ -390,6 +390,10 @@ select {
   border: 1px solid rgba(127, 216, 255, 0.14);
   background: linear-gradient(180deg, rgba(16, 38, 53, 0.9), rgba(8, 21, 31, 0.92));
   overflow: hidden;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
 }
 
 .section-progress-card::before {
@@ -399,6 +403,19 @@ select {
   height: 2px;
   background: linear-gradient(90deg, transparent, var(--accent-strong), transparent);
   opacity: 0.8;
+}
+
+.section-progress-card:hover,
+.section-progress-card:focus-visible,
+.section-progress-card.is-active {
+  border-color: rgba(255, 179, 71, 0.45);
+  box-shadow: 0 0 0 1px rgba(255, 179, 71, 0.18), 0 12px 24px rgba(0, 0, 0, 0.18);
+  background: linear-gradient(180deg, rgba(21, 45, 60, 0.94), rgba(10, 24, 35, 0.96));
+}
+
+.section-progress-card:hover,
+.section-progress-card:focus-visible {
+  transform: translateY(-1px);
 }
 
 .section-progress-header {
