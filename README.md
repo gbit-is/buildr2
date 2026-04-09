@@ -212,6 +212,33 @@ You can also print matching entries:
 python3 scripts/validate_tree_against_config.py file_structure.tree data/droid-types/r2d2.json --show-present
 ```
 
+## Directory-to-JSON script
+
+To dump a directory tree to JSON for easier machine reading:
+
+```bash
+python3 scripts/dir_to_json.py /path/to/source /path/to/output.json
+```
+
+Example:
+
+```bash
+python3 scripts/dir_to_json.py ./assets ./assets-tree.json
+```
+
+Useful option:
+
+```bash
+python3 scripts/dir_to_json.py /path/to/source /path/to/output.json --include-hidden
+```
+
+The JSON output uses a simple recursive structure:
+
+- `type`: `directory` or `file`
+- `name`: item name
+- `path`: path relative to the scanned root
+- `children`: nested items for directories
+
 ## Saving behavior
 
 If you use guest mode, workspace data is saved in your browser's local storage.

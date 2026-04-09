@@ -8,6 +8,7 @@ const state = {
 };
 
 const elements = {};
+const DIRECT_PARTS_KEY = "__parts";
 
 document.addEventListener("DOMContentLoaded", init);
 
@@ -429,7 +430,15 @@ function renderTreeEntries(section, node, path) {
   }
 
   return Object.entries(node)
-    .map(([name, value]) => renderTreeNode(section, name, value, [...path, name]))
+    .map(([name, value]) => {
+      if (name === DIRECT_PARTS_KEY && Array.isArray(value)) {
+        return value
+          .map((part, index) => renderPartEditor(section, path, part, index, path.length))
+          .join("");
+      }
+
+      return renderTreeNode(section, name, value, [...path, name]);
+    })
     .join("");
 }
 
@@ -738,6 +747,13 @@ function listCategoryPaths(categories, path = [], paths = []) {
   }
 
   Object.entries(categories).forEach(([name, value]) => {
+    if (name == DIRECT_PARTS_KEY && Array.isArray(value)) {
+      if (path.length) {
+        paths.push([...path]);
+      }
+      return;
+    }
+
     const nextPath = [...path, name];
     paths.push(nextPath);
     if (value && typeof value === "object" && !Array.isArray(value)) {
@@ -755,7 +771,11 @@ function ensureFolderPath(section, path) {
   path.forEach((segment, index) => {
     const isLeaf = index === path.length - 1;
     if (isLeaf) {
-      if (!node[segment] || Array.isArray(node[segment])) {
+      if (Array.isArray(node[segment])) {
+        node[segment] = {
+          [DIRECT_PARTS_KEY]: node[segment]
+        };
+      } else if (!node[segment]) {
         node[segment] = {};
       }
       return;
@@ -776,9 +796,16 @@ function getOrCreatePartsArray(section, path) {
   path.forEach((segment, index) => {
     const isLeaf = index === path.length - 1;
     if (isLeaf) {
-      if (!Array.isArray(node[segment])) {
-        node[segment] = [];
+      if (Array.isArray(node[segment])) {
+        return;
       }
+
+      if (node[segment] && typeof node[segment] === "object") {
+        node[segment][DIRECT_PARTS_KEY] = node[segment][DIRECT_PARTS_KEY] || [];
+        return;
+      }
+
+      node[segment] = [];
       return;
     }
 
@@ -789,7 +816,17 @@ function getOrCreatePartsArray(section, path) {
     node = node[segment];
   });
 
-  return node[path[path.length - 1]];
+  const leaf = node[path[path.length - 1]];
+  if (Array.isArray(leaf)) {
+    return leaf;
+  }
+
+  if (leaf && typeof leaf === "object") {
+    leaf[DIRECT_PARTS_KEY] = leaf[DIRECT_PARTS_KEY] || [];
+    return leaf[DIRECT_PARTS_KEY];
+  }
+
+  return [];
 }
 
 function getPartsAtPath(section, path) {
@@ -802,7 +839,15 @@ function getPartsAtPath(section, path) {
     const segment = path[index];
     const value = node?.[segment];
     if (index === path.length - 1) {
-      return Array.isArray(value) ? value : [];
+      if (Array.isArray(value)) {
+        return value;
+      }
+
+      if (value && typeof value === "object") {
+        return Array.isArray(value[DIRECT_PARTS_KEY]) ? value[DIRECT_PARTS_KEY] : [];
+      }
+
+      return [];
     }
     if (!value || typeof value !== "object" || Array.isArray(value)) {
       return [];

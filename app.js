@@ -1,6 +1,7 @@
 const LAST_PROFILE_KEY = "buildr2-last-profile";
 const LOCAL_WORKSPACE_KEY = "buildr2-guest-workspace";
 const TREE_STATE_KEY = "buildr2-tree-state";
+const DIRECT_PARTS_KEY = "__parts";
 
 const state = {
   profile: null,
@@ -846,7 +847,14 @@ function renderCategoryTreeEntries(section, categories, selectedOptions, droid, 
   }
 
   return Object.entries(categories)
-    .map(([name, value]) => renderCategoryTreeNode(section, name, value, selectedOptions, droid, [...path, name]))
+    .map(([name, value]) => {
+      if (name === DIRECT_PARTS_KEY && Array.isArray(value)) {
+        const parts = filterParts(value, selectedOptions);
+        return parts.map((part) => renderPartTreeRow(part, droid, path.length)).join("");
+      }
+
+      return renderCategoryTreeNode(section, name, value, selectedOptions, droid, [...path, name]);
+    })
     .filter(Boolean)
     .join("");
 }
@@ -994,6 +1002,15 @@ function flattenCategoryGroups(categories, path = []) {
 
   const groups = [];
   Object.entries(categories).forEach(([key, value]) => {
+    if (key === DIRECT_PARTS_KEY && Array.isArray(value)) {
+      groups.push({
+        path: [...path],
+        label: (path.length ? path : ["root"]).map(titleCase).join(" / "),
+        parts: value
+      });
+      return;
+    }
+
     const nextPath = [...path, key];
     if (Array.isArray(value)) {
       groups.push({
