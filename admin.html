@@ -16,11 +16,11 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script type="module" src="./admin.js"></script>
   </head>
-  <body class="admin-page">
+  <body class="admin-page admin-v2-page">
     <div class="app-shell">
       <header class="topbar">
         <div>
-          <p class="eyebrow">Config Editor</p>
+          <p class="eyebrow">Config Studio</p>
           <h1>Buildr2 Admin</h1>
         </div>
         <div class="auth-panel">
@@ -30,113 +30,137 @@
         </div>
       </header>
 
-      <main class="admin-layout">
-        <section class="panel admin-sidebar">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">Configs</p>
-              <h2>Droid Types</h2>
-            </div>
-          </div>
+      <main class="panel admin-v2-shell">
+        <div id="adminNotice" class="empty-state">
+          Sign in with an allowed Google account to edit droid configs.
+        </div>
 
-          <div id="adminNotice" class="empty-state">
-            Sign in with an allowed Google account to edit droid configs.
-          </div>
-
-          <div id="typePickerPanel" class="hidden">
-            <label>
-              Droid type
+        <div id="adminWorkspace" class="admin-v2-workspace hidden">
+          <section class="admin-v2-toolbar">
+            <label class="admin-v2-field">
+              <span>Droid type</span>
               <select id="typePicker"></select>
             </label>
-            <div id="typeMeta" class="meta-block"></div>
-          </div>
 
-          <div id="sectionSummary" class="admin-list"></div>
-        </section>
-
-        <section class="panel admin-main">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">Table Editor</p>
-              <h2>Manage Parts</h2>
+            <div class="admin-v2-actions">
+              <button id="validateJsonButton" class="ghost-button">Validate JSON</button>
+              <button id="saveConfigButton" class="primary-button">Save config</button>
             </div>
-            <button id="addPartButton" class="pill-button hidden">Add row</button>
-          </div>
+          </section>
 
-          <div id="tableTools" class="bulk-tools hidden">
-            <label>
-              Section
-              <select id="tableSection"></select>
-            </label>
-            <div id="tableVariantPanel" class="variant-panel hidden">
+          <div id="typeMeta" class="meta-block admin-v2-meta"></div>
+
+          <nav class="admin-tabs" aria-label="Admin tabs">
+            <button id="editTabButton" type="button" class="pill-button admin-tab is-active" data-tab="edit">Edit</button>
+            <button id="importTabButton" type="button" class="pill-button admin-tab" data-tab="import">Import</button>
+            <button id="jsonTabButton" type="button" class="pill-button admin-tab" data-tab="json">JSON</button>
+          </nav>
+
+          <section id="editTabPanel" class="admin-tab-panel">
+            <div class="admin-v2-grid">
+              <aside class="admin-v2-sidebar">
+                <div class="section-heading">
+                  <div>
+                    <p class="eyebrow">Edit</p>
+                    <h2>Structure</h2>
+                  </div>
+                </div>
+
+                <label class="admin-v2-field">
+                  <span>Section</span>
+                  <select id="editSection"></select>
+                </label>
+
+                <label class="admin-v2-field">
+                  <span>Path</span>
+                  <input id="editPath" list="editPathList" placeholder="main / upper leg / complex" />
+                  <datalist id="editPathList"></datalist>
+                </label>
+
+                <div class="admin-v2-action-stack">
+                  <button id="addFolderButton" type="button" class="ghost-button">Add folder path</button>
+                  <button id="addPartButton" type="button" class="pill-button">Add part here</button>
+                </div>
+
+                <div class="meta-block">
+                  Treat the path like folders. You can use names like <code>main / upper leg / complex</code> and add parts inside that branch.
+                </div>
+              </aside>
+
+              <section class="admin-v2-main">
+                <div class="section-heading">
+                  <div>
+                    <p class="eyebrow">Directory View</p>
+                    <h2>Parts Tree</h2>
+                  </div>
+                </div>
+
+                <div id="editTree" class="admin-tree-panel"></div>
+              </section>
+            </div>
+          </section>
+
+          <section id="importTabPanel" class="admin-tab-panel hidden">
+            <div class="admin-v2-grid admin-v2-grid-compact">
+              <aside class="admin-v2-sidebar">
+                <div class="section-heading">
+                  <div>
+                    <p class="eyebrow">Import</p>
+                    <h2>Target</h2>
+                  </div>
+                </div>
+
+                <label class="admin-v2-field">
+                  <span>Section</span>
+                  <select id="importSection"></select>
+                </label>
+
+                <label class="admin-v2-field">
+                  <span>Path</span>
+                  <input id="importPath" list="importPathList" placeholder="main / upper leg / complex" />
+                  <datalist id="importPathList"></datalist>
+                </label>
+
+                <button id="appendImportButton" type="button" class="pill-button">Append parts</button>
+
+                <div class="meta-block">
+                  One part per line:
+                  <br />
+                  <code>Name | file-a.stl, file-b.stl | Optional notes | Optional quantity</code>
+                </div>
+              </aside>
+
+              <section class="admin-v2-main">
+                <label class="admin-v2-field admin-v2-textarea-field">
+                  <span>Paste parts</span>
+                  <textarea
+                    id="importText"
+                    class="config-editor"
+                    rows="18"
+                    placeholder="Main Dome Ring | dome/ring-a.stl, dome/ring-b.stl | Optional notes | 2"
+                  ></textarea>
+                </label>
+              </section>
+            </div>
+          </section>
+
+          <section id="jsonTabPanel" class="admin-tab-panel hidden">
+            <div class="section-heading">
               <div>
-                <div class="variant-label">Variant filters</div>
-                <div id="tableVariantGroups" class="variant-groups"></div>
+                <p class="eyebrow">Raw JSON</p>
+                <h2>Editor</h2>
               </div>
             </div>
-            <label>
-              Category path
-              <input id="tableCategory" list="tableCategoryPaths" placeholder="main or greebles / psis" />
-              <datalist id="tableCategoryPaths"></datalist>
-            </label>
-            <div id="partsTablePanel" class="parts-table-panel"></div>
-          </div>
 
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">Import</p>
-              <h2>Bulk Add Parts</h2>
-            </div>
-            <button id="appendPartsButton" class="pill-button hidden">Append to config</button>
-          </div>
-
-          <div id="bulkTools" class="bulk-tools hidden">
-            <label>
-              Section
-              <select id="bulkSection"></select>
-            </label>
-            <div id="bulkVariantPanel" class="variant-panel hidden">
-              <div>
-                <div class="variant-label">Variant requirements</div>
-                <div id="bulkVariantGroups" class="variant-groups"></div>
-              </div>
-            </div>
-            <label>
-              Category path
-              <input id="bulkCategory" list="bulkCategoryPaths" placeholder="main or greebles / psis" />
-              <datalist id="bulkCategoryPaths"></datalist>
-            </label>
-            <label>
-              Paste parts
-              <textarea
-                id="bulkParts"
-                rows="10"
-                placeholder="One part per line. Format: Name | file-a.stl, file-b.stl | Optional notes | Optional quantity"
-              ></textarea>
-            </label>
-            <div class="meta-block">
-              Lines are converted into part objects automatically. IDs are generated from the part name. If a section has options like printer size, choose variant settings above to apply matching `requirements` to the imported parts. Quantity defaults to `1`.
-            </div>
-          </div>
-
-          <div class="section-heading editor-heading">
-            <div>
-              <p class="eyebrow">Raw JSON</p>
-              <h2>Config Editor</h2>
-            </div>
-            <button id="saveConfigButton" class="primary-button hidden">Save config</button>
-          </div>
-
-          <textarea
-            id="configEditor"
-            class="config-editor"
-            spellcheck="false"
-            placeholder="Select a droid type to load its config."
-            disabled
-          ></textarea>
-        </section>
+            <textarea
+              id="configEditor"
+              class="config-editor"
+              spellcheck="false"
+              placeholder="Select a droid type to load its config."
+            ></textarea>
+          </section>
+        </div>
       </main>
-
     </div>
   </body>
 </html>

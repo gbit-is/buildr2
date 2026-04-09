@@ -117,7 +117,7 @@ Important note:
 
 ## Admin editor
 
-You can enable `/old_admin` for specific Google users by launching the server with an allowlist:
+You can enable the new `/admin` editor for specific Google users by launching the server with an allowlist:
 
 ```bash
 node server.js
@@ -126,7 +126,7 @@ node server.js
 Then open:
 
 ```text
-http://localhost:4173/old_admin
+http://localhost:4173/admin
 ```
 
 Important notes:
@@ -136,13 +136,19 @@ Important notes:
 - admin sessions are stored in memory, so signing in again is required after a server restart
 - `GOOGLE_CLIENT_ID` in `.env` is used by both the browser sign-in button and the server-side admin verification
 
-The admin page lets you:
+The new admin page lets you:
 
 - choose a droid type config from `data/droid-types/index.json`
-- manage parts in a table with add, edit, and delete actions
-- edit the raw JSON and save it back to disk
-- bulk append parts into a selected section and category using pasted lines
-- assign imported parts to a section variant such as `large` or `small` printer when that section has options
+- switch between `Edit`, `Import`, and `JSON` tabs
+- manage parts in a directory-style tree view with add and delete actions
+- bulk append parts into a selected section and path using pasted lines
+- validate raw JSON before saving it back to disk
+
+The legacy admin UI is still available at:
+
+```text
+http://localhost:4173/old_admin
+```
 
 Bulk import format:
 

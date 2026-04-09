@@ -3,7 +3,8 @@ const state = {
   catalog: [],
   selectedTypeId: null,
   currentConfig: null,
-  visiblePartRows: []
+  activeTab: "edit",
+  expandedNodes: {}
 };
 
 const elements = {};
@@ -22,35 +23,32 @@ function captureElements() {
   elements.adminGoogleSignIn = document.querySelector("#adminGoogleSignIn");
   elements.adminLogoutButton = document.querySelector("#adminLogoutButton");
   elements.adminNotice = document.querySelector("#adminNotice");
-  elements.typePickerPanel = document.querySelector("#typePickerPanel");
+  elements.adminWorkspace = document.querySelector("#adminWorkspace");
   elements.typePicker = document.querySelector("#typePicker");
   elements.typeMeta = document.querySelector("#typeMeta");
-  elements.sectionSummary = document.querySelector("#sectionSummary");
-  elements.tableTools = document.querySelector("#tableTools");
-  elements.tableSection = document.querySelector("#tableSection");
-  elements.tableVariantPanel = document.querySelector("#tableVariantPanel");
-  elements.tableVariantGroups = document.querySelector("#tableVariantGroups");
-  elements.tableCategory = document.querySelector("#tableCategory");
-  elements.tableCategoryPaths = document.querySelector("#tableCategoryPaths");
-  elements.partsTablePanel = document.querySelector("#partsTablePanel");
-  elements.addPartButton = document.querySelector("#addPartButton");
-  elements.bulkTools = document.querySelector("#bulkTools");
-  elements.bulkSection = document.querySelector("#bulkSection");
-  elements.bulkVariantPanel = document.querySelector("#bulkVariantPanel");
-  elements.bulkVariantGroups = document.querySelector("#bulkVariantGroups");
-  elements.bulkCategory = document.querySelector("#bulkCategory");
-  elements.bulkCategoryPaths = document.querySelector("#bulkCategoryPaths");
-  elements.bulkParts = document.querySelector("#bulkParts");
-  elements.appendPartsButton = document.querySelector("#appendPartsButton");
-  elements.configEditor = document.querySelector("#configEditor");
+  elements.validateJsonButton = document.querySelector("#validateJsonButton");
   elements.saveConfigButton = document.querySelector("#saveConfigButton");
+  elements.tabButtons = Array.from(document.querySelectorAll("[data-tab]"));
+  elements.editTabPanel = document.querySelector("#editTabPanel");
+  elements.importTabPanel = document.querySelector("#importTabPanel");
+  elements.jsonTabPanel = document.querySelector("#jsonTabPanel");
+  elements.editSection = document.querySelector("#editSection");
+  elements.editPath = document.querySelector("#editPath");
+  elements.editPathList = document.querySelector("#editPathList");
+  elements.addFolderButton = document.querySelector("#addFolderButton");
+  elements.addPartButton = document.querySelector("#addPartButton");
+  elements.editTree = document.querySelector("#editTree");
+  elements.importSection = document.querySelector("#importSection");
+  elements.importPath = document.querySelector("#importPath");
+  elements.importPathList = document.querySelector("#importPathList");
+  elements.importText = document.querySelector("#importText");
+  elements.appendImportButton = document.querySelector("#appendImportButton");
+  elements.configEditor = document.querySelector("#configEditor");
 }
 
 function bindEvents() {
   elements.adminLogoutButton.addEventListener("click", async () => {
-    await fetch("/api/admin/logout", {
-      method: "POST"
-    });
+    await fetch("/api/admin/logout", { method: "POST" });
     state.session = null;
     state.catalog = [];
     state.selectedTypeId = null;
@@ -63,60 +61,69 @@ function bindEvents() {
     await loadSelectedConfig();
   });
 
-  elements.tableSection.addEventListener("change", () => {
-    renderCategoryInputs();
-    renderTableVariantControls();
-    renderPartsTable();
+  elements.tabButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      state.activeTab = button.dataset.tab;
+      renderTabs();
+    });
   });
 
-  elements.tableCategory.addEventListener("change", () => {
-    renderPartsTable();
+  elements.editSection.addEventListener("change", () => {
+    syncPathInputs();
+    renderEditTree();
   });
 
-  elements.bulkSection.addEventListener("change", () => {
-    renderCategoryInputs();
-    renderVariantControls();
+  elements.importSection.addEventListener("change", () => {
+    syncPathInputs();
   });
 
-  elements.tableVariantGroups.addEventListener("change", () => {
-    renderPartsTable();
-  });
-
-  elements.bulkVariantGroups.addEventListener("change", () => {
-    // selections are read lazily when appending/importing
-  });
-
-  elements.tableVariantGroups.addEventListener("click", (event) => {
-    handleVariantAction(event, "table");
-  });
-
-  elements.bulkVariantGroups.addEventListener("click", (event) => {
-    handleVariantAction(event, "bulk");
-  });
-
-  elements.appendPartsButton.addEventListener("click", () => {
-    appendBulkParts();
+  elements.addFolderButton.addEventListener("click", () => {
+    addFolderPath();
   });
 
   elements.addPartButton.addEventListener("click", () => {
-    addPartRow();
+    addPartAtCurrentPath();
   });
 
-  elements.partsTablePanel.addEventListener("input", (event) => {
-    handleTableInput(event);
+  elements.appendImportButton.addEventListener("click", () => {
+    appendImportParts();
   });
 
-  elements.partsTablePanel.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-delete-row]");
-    if (!button) {
-      return;
-    }
-
-    deletePartRow(Number(button.dataset.deleteRow));
+  elements.validateJsonButton.addEventListener("click", () => {
+    validateJsonEditor();
   });
 
   elements.saveConfigButton.addEventListener("click", async () => {
     await saveCurrentConfig();
+  });
+
+  elements.editTree.addEventListener("click", (event) => {
+    const toggle = event.target.closest("[data-toggle-node]");
+    if (toggle) {
+      const key = toggle.dataset.toggleNode;
+      state.expandedNodes[key] = !isNodeExpanded(key);
+      renderEditTree();
+      return;
+    }
+
+    const deleteButton = event.target.closest("[data-delete-part]");
+    if (deleteButton) {
+      deletePart(deleteButton.dataset.deletePart, Number(deleteButton.dataset.partIndex));
+    }
+  });
+
+  elements.editTree.addEventListener("input", (event) => {
+    const target = event.target.closest("[data-part-field]");
+    if (!target) {
+      return;
+    }
+
+    updatePartField(
+      target.dataset.partPath,
+      Number(target.dataset.partIndex),
+      target.dataset.partField,
+      target.value
+    );
   });
 }
 
@@ -198,6 +205,7 @@ async function loadSelectedConfig() {
   }
 
   state.currentConfig = payload;
+  syncEditorFromState();
   render();
 }
 
@@ -208,393 +216,357 @@ function render(sessionInfo = null) {
       ? "Sign in with an allowed Google account."
       : "Admin mode is disabled on this server.";
     elements.adminLogoutButton.classList.add("hidden");
-    elements.typePickerPanel.classList.add("hidden");
-    elements.tableTools.classList.add("hidden");
-    elements.bulkTools.classList.add("hidden");
-    elements.addPartButton.classList.add("hidden");
-    elements.appendPartsButton.classList.add("hidden");
-    elements.saveConfigButton.classList.add("hidden");
     elements.adminNotice.classList.remove("hidden");
+    elements.adminWorkspace.classList.add("hidden");
     elements.configEditor.value = "";
-    elements.configEditor.disabled = true;
-    elements.sectionSummary.innerHTML = "";
-    elements.partsTablePanel.innerHTML = "";
-    state.visiblePartRows = [];
-    elements.bulkVariantPanel.classList.add("hidden");
-    elements.tableVariantPanel.classList.add("hidden");
-    elements.bulkVariantGroups.innerHTML = "";
-    elements.tableVariantGroups.innerHTML = "";
     return;
   }
 
   elements.adminStatus.textContent = `${state.session.name} (${state.session.email})`;
   elements.adminLogoutButton.classList.remove("hidden");
-  elements.typePickerPanel.classList.remove("hidden");
-  elements.tableTools.classList.remove("hidden");
-  elements.bulkTools.classList.remove("hidden");
-  elements.addPartButton.classList.remove("hidden");
-  elements.appendPartsButton.classList.remove("hidden");
-  elements.saveConfigButton.classList.remove("hidden");
   elements.adminNotice.classList.add("hidden");
-  elements.configEditor.disabled = false;
+  elements.adminWorkspace.classList.remove("hidden");
 
   renderTypePicker();
-  renderCurrentConfig();
+  renderTabs();
+  renderConfigUi();
 }
 
 function renderTypePicker() {
   elements.typePicker.innerHTML = state.catalog
     .map((item) => {
       const selected = item.id === state.selectedTypeId ? "selected" : "";
-      return `<option value="${item.id}" ${selected}>${item.name}</option>`;
+      return `<option value="${item.id}" ${selected}>${escapeHtml(item.name)}</option>`;
     })
     .join("");
 }
 
-function renderCurrentConfig() {
+function renderTabs() {
+  elements.tabButtons.forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.tab === state.activeTab);
+  });
+
+  elements.editTabPanel.classList.toggle("hidden", state.activeTab !== "edit");
+  elements.importTabPanel.classList.toggle("hidden", state.activeTab !== "import");
+  elements.jsonTabPanel.classList.toggle("hidden", state.activeTab !== "json");
+}
+
+function renderConfigUi() {
   if (!state.currentConfig) {
     elements.typeMeta.textContent = "Select a droid type to begin editing.";
-    elements.sectionSummary.innerHTML = "";
-    elements.configEditor.value = "";
-    elements.bulkSection.innerHTML = "";
-    elements.tableSection.innerHTML = "";
-    elements.partsTablePanel.innerHTML = "";
-    state.visiblePartRows = [];
-    elements.bulkVariantPanel.classList.add("hidden");
-    elements.tableVariantPanel.classList.add("hidden");
-    elements.bulkVariantGroups.innerHTML = "";
-    elements.tableVariantGroups.innerHTML = "";
+    elements.editTree.innerHTML = '<div class="admin-tree-empty">Select a droid type to load its config.</div>';
     return;
   }
 
   const { entry, filePath, config } = state.currentConfig;
   elements.typeMeta.textContent = `${entry.name} • ${filePath}`;
-  elements.configEditor.value = `${JSON.stringify(config, null, 2)}\n`;
 
   const sections = config.sections ?? [];
-  elements.bulkSection.innerHTML = sections
-    .map((section) => `<option value="${section.id}">${section.label}</option>`)
+  const optionsMarkup = sections
+    .map((section) => `<option value="${section.id}">${escapeHtml(section.label)}</option>`)
     .join("");
-  elements.tableSection.innerHTML = sections
-    .map((section) => `<option value="${section.id}">${section.label}</option>`)
-    .join("");
-  renderCategoryInputs();
-  renderVariantControls();
-  renderTableVariantControls();
-  renderPartsTable();
 
-  elements.sectionSummary.innerHTML = sections
-    .map((section) => {
-      const categorySummary = listCategoryLeafPaths(section.categories)
-        .map((entry) => `${entry.display}: ${entry.parts.length}`)
-        .join(" • ");
-      const optionSummary = (section.options ?? [])
-        .map((option) => `${option.label}: ${option.choices.map((choice) => choice.label).join(", ")}`)
-        .join(" • ");
-      return `
-        <article>
-          <strong>${escapeHtml(section.label)}</strong>
-          <div class="meta">${escapeHtml(categorySummary || "No category paths yet")}</div>
-          ${optionSummary ? `<div class="meta">${escapeHtml(optionSummary)}</div>` : ""}
-        </article>
-      `;
-    })
-    .join("");
+  elements.editSection.innerHTML = optionsMarkup;
+  elements.importSection.innerHTML = optionsMarkup;
+
+  if (!elements.editSection.value && sections[0]) {
+    elements.editSection.value = sections[0].id;
+  }
+
+  if (!elements.importSection.value && sections[0]) {
+    elements.importSection.value = sections[0].id;
+  }
+
+  if (![...sections.map((section) => section.id)].includes(elements.editSection.value) && sections[0]) {
+    elements.editSection.value = sections[0].id;
+  }
+
+  if (![...sections.map((section) => section.id)].includes(elements.importSection.value) && sections[0]) {
+    elements.importSection.value = sections[0].id;
+  }
+
+  syncPathInputs();
+  renderEditTree();
 }
 
-function renderCategoryInputs() {
-  const tableSection = getSelectedTableSection();
-  const bulkSection = getSelectedBulkSection();
-  syncCategoryInput(elements.tableCategory, elements.tableCategoryPaths, tableSection);
-  syncCategoryInput(elements.bulkCategory, elements.bulkCategoryPaths, bulkSection);
-}
-
-function syncCategoryInput(input, datalist, section) {
-  const paths = listCategoryLeafPaths(section?.categories);
-  datalist.innerHTML = paths
-    .map((entry) => `<option value="${escapeHtml(entry.display)}"></option>`)
-    .join("");
-
-  if (!input.value.trim()) {
-    input.value = paths[0]?.display || "main";
+function syncEditorFromState() {
+  if (!state.currentConfig?.config) {
+    elements.configEditor.value = "";
     return;
   }
 
-  const normalized = normalizeCategoryPath(input.value);
-  if (!normalized.length) {
-    input.value = paths[0]?.display || "main";
+  elements.configEditor.value = `${JSON.stringify(state.currentConfig.config, null, 2)}\n`;
+}
+
+function validateJsonEditor() {
+  const parsed = parseJsonEditor();
+  if (!parsed) {
+    return false;
+  }
+
+  state.currentConfig.config = parsed;
+  syncEditorFromState();
+  renderConfigUi();
+  elements.adminStatus.textContent = "JSON is valid.";
+  return true;
+}
+
+async function saveCurrentConfig() {
+  if (!state.currentConfig) {
     return;
   }
 
-  input.value = normalized.join(" / ");
-}
-
-function renderVariantControls() {
-  const section = getSelectedBulkSection();
-  const options = section?.options ?? [];
-
-  if (!options.length) {
-    elements.bulkVariantPanel.classList.add("hidden");
-    elements.bulkVariantGroups.innerHTML = "";
+  const parsed = parseJsonEditor();
+  if (!parsed) {
     return;
   }
 
-  elements.bulkVariantPanel.classList.remove("hidden");
-  elements.bulkVariantGroups.innerHTML = renderVariantGroups("bulk", options);
-}
+  const response = await fetch(`/api/admin/droid-types/${encodeURIComponent(state.selectedTypeId)}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(parsed)
+  });
 
-function renderTableVariantControls() {
-  const section = getSelectedTableSection();
-  const options = section?.options ?? [];
-
-  if (!options.length) {
-    elements.tableVariantPanel.classList.add("hidden");
-    elements.tableVariantGroups.innerHTML = "";
+  const payload = await response.json();
+  if (!response.ok) {
+    elements.adminStatus.textContent = payload.message || "Failed to save config.";
     return;
   }
 
-  elements.tableVariantPanel.classList.remove("hidden");
-  elements.tableVariantGroups.innerHTML = renderVariantGroups("table", options);
+  state.currentConfig.config = parsed;
+  syncEditorFromState();
+  renderConfigUi();
+  elements.adminStatus.textContent = `Saved ${state.selectedTypeId} at ${payload.updatedAt}.`;
 }
 
-function renderVariantGroups(prefix, options) {
-  return options
-    .map((option) => {
-      const groupName = `${prefix}-variant-${option.id}`;
-      const choices = option.choices
-        .map((choice) =>
-          renderVariantChoiceLine(
-            groupName,
-            choice,
-            choice.id === option.defaultChoiceId,
-            option.id,
-            option.choices.length > 1
-          )
-        )
-        .join("");
+function parseJsonEditor() {
+  try {
+    return JSON.parse(elements.configEditor.value);
+  } catch (error) {
+    elements.adminStatus.textContent = `JSON error: ${error.message}`;
+    state.activeTab = "json";
+    renderTabs();
+    return null;
+  }
+}
 
-      return `
-        <section class="variant-group" data-option-id="${option.id}">
-          <div class="variant-group-header">
-            <div class="variant-group-title">${escapeHtml(option.label)}</div>
-            <button
-              type="button"
-              class="pill-button variant-action-button"
-              data-add-variant="${option.id}"
-              data-source="${prefix}"
-            >
-              Add variant
-            </button>
+function syncPathInputs() {
+  const editSection = getSelectedEditSection();
+  const importSection = getSelectedImportSection();
+  syncPathInput(elements.editPath, elements.editPathList, editSection);
+  syncPathInput(elements.importPath, elements.importPathList, importSection);
+}
+
+function syncPathInput(input, datalist, section) {
+  const paths = listCategoryPaths(section?.categories);
+  datalist.innerHTML = paths.map((path) => `<option value="${escapeHtml(path.join(" / "))}"></option>`).join("");
+
+  const normalized = normalizePath(input.value);
+  if (normalized.length) {
+    input.value = normalized.join(" / ");
+    return;
+  }
+
+  input.value = paths[0]?.join(" / ") || "main";
+}
+
+function renderEditTree() {
+  const section = getSelectedEditSection();
+  if (!section) {
+    elements.editTree.innerHTML = '<div class="admin-tree-empty">Choose a section to start editing.</div>';
+    return;
+  }
+
+  const markup = renderTreeEntries(section, section.categories ?? {}, []);
+  elements.editTree.innerHTML = markup || '<div class="admin-tree-empty">No folders or parts in this section yet.</div>';
+}
+
+function renderTreeEntries(section, node, path) {
+  if (!node || typeof node !== "object") {
+    return "";
+  }
+
+  return Object.entries(node)
+    .map(([name, value]) => renderTreeNode(section, name, value, [...path, name]))
+    .join("");
+}
+
+function renderTreeNode(section, name, value, path) {
+  const depth = Math.max(0, path.length - 1);
+  const key = buildPathKey(section.id, path);
+  const expanded = isNodeExpanded(key);
+
+  if (Array.isArray(value)) {
+    const partCount = value.length;
+    const children = expanded
+      ? value
+          .map((part, index) => renderPartEditor(section, path, part, index, depth + 1))
+          .join("")
+      : "";
+
+    return `
+      <section class="admin-tree-group">
+        <button type="button" class="admin-tree-folder-row" data-toggle-node="${escapeHtml(key)}" style="--tree-depth:${depth};">
+          <div class="admin-tree-folder-main">
+            <span class="admin-tree-toggle" aria-hidden="true">${expanded ? "▾" : "▸"}</span>
+            <span class="admin-tree-folder-icon" aria-hidden="true">${expanded ? "[-]" : "[+]"}</span>
+            <span class="admin-tree-folder-name">${escapeHtml(titleCase(name))}</span>
           </div>
-          <div class="variant-choice-list">${choices}</div>
-        </section>
-      `;
-    })
-    .join("");
-}
+          <span class="admin-tree-folder-count">${partCount} part${partCount === 1 ? "" : "s"}</span>
+        </button>
+        ${expanded ? `<div class="admin-tree-children">${children}</div>` : ""}
+      </section>
+    `;
+  }
 
-function renderVariantChoiceLine(groupName, choice, checked, optionId, canDelete) {
+  const childCount = countNestedParts(value);
+  const children = expanded ? renderTreeEntries(section, value, path) : "";
   return `
-    <div class="variant-choice-line">
-      <label class="variant-choice-select">
-        <input type="radio" name="${groupName}" value="${choice.id}" data-option-id="${optionId}" ${checked ? "checked" : ""} />
-        <span>${escapeHtml(choice.label)}</span>
-      </label>
-      <button
-        type="button"
-        class="ghost-button variant-delete-button"
-        data-delete-variant="${optionId}:${choice.id}"
-        ${canDelete ? "" : "disabled"}
-      >
-        Delete
+    <section class="admin-tree-group">
+      <button type="button" class="admin-tree-folder-row" data-toggle-node="${escapeHtml(key)}" style="--tree-depth:${depth};">
+        <div class="admin-tree-folder-main">
+          <span class="admin-tree-toggle" aria-hidden="true">${expanded ? "▾" : "▸"}</span>
+          <span class="admin-tree-folder-icon" aria-hidden="true">${expanded ? "[-]" : "[+]"}</span>
+          <span class="admin-tree-folder-name">${escapeHtml(titleCase(name))}</span>
+        </div>
+        <span class="admin-tree-folder-count">${childCount} part${childCount === 1 ? "" : "s"}</span>
       </button>
-    </div>
+      ${expanded ? `<div class="admin-tree-children">${children}</div>` : ""}
+    </section>
   `;
 }
 
-function handleVariantAction(event, source) {
-  const addButton = event.target.closest("[data-add-variant]");
-  if (addButton) {
-    addVariantChoice(addButton.dataset.addVariant, source);
-    return;
-  }
-
-  const deleteButton = event.target.closest("[data-delete-variant]");
-  if (deleteButton) {
-    const [optionId, choiceId] = String(deleteButton.dataset.deleteVariant || "").split(":");
-    if (optionId && choiceId) {
-      deleteVariantChoice(optionId, choiceId, source);
-    }
-  }
+function renderPartEditor(section, path, part, index, depth) {
+  const pathLabel = path.join(" / ");
+  const key = buildPathKey(section.id, path);
+  return `
+    <article class="admin-tree-part" style="--tree-depth:${depth};">
+      <div class="admin-tree-part-main">
+        <span class="admin-tree-file-icon" aria-hidden="true">[]</span>
+        <div class="admin-tree-part-meta">
+          <div class="admin-tree-part-name">${escapeHtml(part.name || "Unnamed part")}</div>
+          <div class="admin-tree-part-id">${escapeHtml(part.id || "")}</div>
+          <div class="admin-tree-path">${escapeHtml(pathLabel)}</div>
+        </div>
+      </div>
+      <div class="admin-tree-part-actions">
+        <button
+          type="button"
+          class="ghost-button"
+          data-delete-part="${escapeHtml(key)}"
+          data-part-index="${index}"
+        >
+          Delete
+        </button>
+      </div>
+      <div class="admin-tree-editor" style="--tree-depth:${depth};">
+        <div class="admin-tree-editor-grid">
+          <label class="admin-inline-field">
+            <span>ID</span>
+            <input data-part-path="${escapeHtml(key)}" data-part-index="${index}" data-part-field="id" value="${escapeHtml(part.id || "")}" />
+          </label>
+          <label class="admin-inline-field">
+            <span>Name</span>
+            <input data-part-path="${escapeHtml(key)}" data-part-index="${index}" data-part-field="name" value="${escapeHtml(part.name || "")}" />
+          </label>
+          <label class="admin-inline-field">
+            <span>Files</span>
+            <input
+              data-part-path="${escapeHtml(key)}"
+              data-part-index="${index}"
+              data-part-field="files"
+              value="${escapeHtml((part.files || []).join(", "))}"
+            />
+          </label>
+          <label class="admin-inline-field">
+            <span>Quantity</span>
+            <input
+              type="number"
+              min="1"
+              step="1"
+              data-part-path="${escapeHtml(key)}"
+              data-part-index="${index}"
+              data-part-field="quantity"
+              value="${getQuantityValue(part)}"
+            />
+          </label>
+        </div>
+        <label class="admin-inline-field">
+          <span>Notes</span>
+          <textarea data-part-path="${escapeHtml(key)}" data-part-index="${index}" data-part-field="notes">${escapeHtml(
+            part.notes || ""
+          )}</textarea>
+        </label>
+      </div>
+    </article>
+  `;
 }
 
-function addVariantChoice(optionId, source) {
-  const config = parseEditorConfig();
-  const section = source === "table" ? getSelectedTableSection() : getSelectedBulkSection();
-  if (!config || !section) {
+function addFolderPath() {
+  const config = getConfig();
+  const section = getSelectedEditSection();
+  const path = normalizePath(elements.editPath.value);
+  if (!config || !section || !path.length) {
+    elements.adminStatus.textContent = "Choose a section and path first.";
     return;
   }
 
-  const option = section.options?.find((item) => item.id === optionId);
-  if (!option) {
-    elements.adminStatus.textContent = "Variant option not found.";
+  ensureFolderPath(section, path);
+  updateStateConfig(config);
+  elements.adminStatus.textContent = `Added folder path ${path.join(" / ")}.`;
+}
+
+function addPartAtCurrentPath() {
+  const config = getConfig();
+  const section = getSelectedEditSection();
+  const path = normalizePath(elements.editPath.value);
+  if (!config || !section || !path.length) {
+    elements.adminStatus.textContent = "Choose a section and path first.";
     return;
   }
 
-  const label = window.prompt(`New variant label for ${option.label}:`);
-  if (!label) {
-    return;
-  }
-
-  const trimmedLabel = label.trim();
-  if (!trimmedLabel) {
-    return;
-  }
-
-  let baseId = slugify(trimmedLabel);
-  if (!baseId) {
-    baseId = `variant-${option.choices.length + 1}`;
-  }
-
-  let nextId = baseId;
-  let index = 2;
-  const existingIds = new Set(option.choices.map((choice) => choice.id));
-  while (existingIds.has(nextId)) {
-    nextId = `${baseId}-${index}`;
-    index += 1;
-  }
-
-  option.choices.push({
-    id: nextId,
-    label: trimmedLabel
+  const parts = getOrCreatePartsArray(section, path);
+  parts.push({
+    id: `new-part-${parts.length + 1}`,
+    name: "New part",
+    files: []
   });
 
-  updateEditorFromConfig(config);
-  renderCurrentConfig();
-  selectVariantChoice(source, optionId, nextId);
-  elements.adminStatus.textContent = `Added variant "${trimmedLabel}" to ${option.label}. Save when ready.`;
+  updateStateConfig(config);
+  elements.adminStatus.textContent = `Added a part to ${path.join(" / ")}.`;
 }
 
-function deleteVariantChoice(optionId, choiceId, source) {
-  const config = parseEditorConfig();
-  const section = source === "table" ? getSelectedTableSection() : getSelectedBulkSection();
-  if (!config || !section) {
-    return;
-  }
-
-  const option = section.options?.find((item) => item.id === optionId);
-  if (!option) {
-    elements.adminStatus.textContent = "Variant option not found.";
-    return;
-  }
-
-  if ((option.choices?.length ?? 0) <= 1) {
-    elements.adminStatus.textContent = "Each option must keep at least one variant.";
-    return;
-  }
-
-  const choice = option.choices.find((item) => item.id === choiceId);
-  if (!choice) {
-    return;
-  }
-
-  option.choices = option.choices.filter((item) => item.id !== choiceId);
-  if (option.defaultChoiceId === choiceId) {
-    option.defaultChoiceId = option.choices[0]?.id ?? null;
-  }
-
-  removeVariantChoiceReferences(config, section.id, optionId, choiceId);
-  updateEditorFromConfig(config);
-  renderCurrentConfig();
-  selectVariantChoice(source, optionId, option.defaultChoiceId);
-  elements.adminStatus.textContent = `Deleted variant "${choice.label}" from ${option.label}. Save when ready.`;
-}
-
-function removeVariantChoiceReferences(config, sectionId, optionId, choiceId) {
-  const section = config.sections?.find((item) => item.id === sectionId);
-  if (!section) {
-    return;
-  }
-
-  iterateCategoryParts(section.categories, (part) => {
-    if (!part.requirements?.[optionId]) {
-      return;
-    }
-
-    const nextChoices = part.requirements[optionId].filter((value) => value !== choiceId);
-    if (nextChoices.length) {
-      part.requirements[optionId] = nextChoices;
-    } else {
-      delete part.requirements[optionId];
-    }
-
-    if (!Object.keys(part.requirements).length) {
-      delete part.requirements;
-    }
-  });
-}
-
-function selectVariantChoice(source, optionId, choiceId) {
-  if (!choiceId) {
-    return;
-  }
-
-  const container = source === "table" ? elements.tableVariantGroups : elements.bulkVariantGroups;
-  const input = container.querySelector(
-    `input[type="radio"][data-option-id="${CSS.escape(optionId)}"][value="${CSS.escape(choiceId)}"]`
-  );
-  if (input) {
-    input.checked = true;
-  }
-}
-
-function appendBulkParts() {
-  const config = parseEditorConfig();
-  if (!config) {
-    return;
-  }
-
-  const sectionId = elements.bulkSection.value;
-  const categoryPath = normalizeCategoryPath(elements.bulkCategory.value);
-  const lines = elements.bulkParts.value
+function appendImportParts() {
+  const config = getConfig();
+  const section = getSelectedImportSection();
+  const path = normalizePath(elements.importPath.value);
+  const lines = elements.importText.value
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean);
 
-  if (!sectionId || !categoryPath.length || !lines.length) {
-    elements.adminStatus.textContent = "Choose a section and paste at least one part line.";
+  if (!config || !section || !path.length || !lines.length) {
+    elements.adminStatus.textContent = "Choose a section, choose a path, and paste at least one part line.";
     return;
   }
 
-  const section = config.sections.find((item) => item.id === sectionId);
-  if (!section) {
-    elements.adminStatus.textContent = "Selected section was not found in the config.";
-    return;
-  }
-
-  const parts = getOrCreateCategoryParts(section, categoryPath);
-  const bulkRequirement = buildBulkRequirement(section);
-
+  const parts = getOrCreatePartsArray(section, path);
   lines.forEach((line) => {
-    const [nameRaw, filesRaw = "", notesRaw = "", quantityRaw = ""] = line.split("|").map((part) => part.trim());
-    const name = nameRaw;
-    if (!name) {
+    const [nameRaw, filesRaw = "", notesRaw = "", quantityRaw = ""] = line.split("|").map((item) => item.trim());
+    if (!nameRaw) {
       return;
     }
 
-    const files = filesRaw
-      .split(",")
-      .map((file) => file.trim())
-      .filter(Boolean);
-
     const nextPart = {
-      id: slugify(name),
-      name
+      id: slugify(nameRaw),
+      name: nameRaw,
+      files: filesRaw
+        .split(",")
+        .map((file) => file.trim())
+        .filter(Boolean)
     };
-
-    if (files.length) {
-      nextPart.files = files;
-    }
 
     if (notesRaw) {
       nextPart.notes = notesRaw;
@@ -605,385 +577,134 @@ function appendBulkParts() {
       nextPart.quantity = quantity;
     }
 
-    if (bulkRequirement) {
-      nextPart.requirements = bulkRequirement;
-    }
-
     parts.push(nextPart);
   });
 
-  elements.configEditor.value = `${JSON.stringify(config, null, 2)}\n`;
-  elements.bulkParts.value = "";
-  state.currentConfig.config = config;
-  renderCurrentConfig();
-  elements.adminStatus.textContent = `Added ${lines.length} part line(s) to ${section.label} / ${categoryPath.join(" / ")}. Save when ready.`;
+  elements.importText.value = "";
+  updateStateConfig(config);
+  elements.adminStatus.textContent = `Imported ${lines.length} line(s) into ${path.join(" / ")}.`;
 }
 
-function buildBulkRequirement(section) {
-  const options = section.options ?? [];
-  if (!options.length) {
-    return null;
-  }
-
-  return buildRequirementsFromContainer(elements.bulkVariantGroups);
-}
-
-function getSelectedBulkSection() {
-  const config = parseEditorConfig(true);
-  if (!config) {
-    return null;
-  }
-
-  return config.sections?.find((section) => section.id === elements.bulkSection.value) ?? null;
-}
-
-function getSelectedTableSection() {
-  const config = parseEditorConfig(true);
-  if (!config) {
-    return null;
-  }
-
-  return config.sections?.find((section) => section.id === elements.tableSection.value) ?? null;
-}
-
-function renderPartsTable() {
-  const config = parseEditorConfig(true);
-  const section = getSelectedTableSection();
-  const categoryPath = normalizeCategoryPath(elements.tableCategory.value);
-  state.visiblePartRows = [];
-
-  if (!config || !section) {
-    elements.partsTablePanel.innerHTML = '<div class="empty-state">Select a section to edit parts.</div>';
-    return;
-  }
-
-  if (!categoryPath.length) {
-    elements.partsTablePanel.innerHTML = '<div class="empty-state">Enter a category path like "main" or "greebles / psis".</div>';
-    return;
-  }
-
-  const parts = getCategoryParts(section, categoryPath);
-  const variantRequirement = buildTableRequirement(section);
-  const rows = [];
-
-  parts.forEach((part, index) => {
-    if (!matchesTableVariant(part, variantRequirement)) {
-      return;
-    }
-
-    state.visiblePartRows.push({
-      sectionId: section.id,
-      categoryPath,
-      partIndex: index
-    });
-
-    rows.push(`
-      <tr>
-        <td><input data-row-index="${state.visiblePartRows.length - 1}" data-field="id" value="${escapeHtml(part.id || "")}" /></td>
-        <td><input data-row-index="${state.visiblePartRows.length - 1}" data-field="name" value="${escapeHtml(part.name || "")}" /></td>
-        <td><input data-row-index="${state.visiblePartRows.length - 1}" data-field="files" value="${escapeHtml((part.files || []).join(", "))}" /></td>
-        <td><input type="number" min="1" step="1" data-row-index="${state.visiblePartRows.length - 1}" data-field="quantity" value="${getPartQuantityValue(part)}" /></td>
-        <td><textarea data-row-index="${state.visiblePartRows.length - 1}" data-field="notes">${escapeHtml(part.notes || "")}</textarea></td>
-        <td>${renderRequirementBadge(part.requirements, variantRequirement)}</td>
-        <td class="row-actions"><button class="ghost-button" data-delete-row="${state.visiblePartRows.length - 1}">Delete</button></td>
-      </tr>
-    `);
-  });
-
-  if (!rows.length) {
-    elements.partsTablePanel.innerHTML = '<div class="empty-state">No parts for this section/category/variant yet.</div>';
-    return;
-  }
-
-  elements.partsTablePanel.innerHTML = `
-    <table class="parts-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Files</th>
-          <th>Qty</th>
-          <th>Notes</th>
-          <th>Variant</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${rows.join("")}
-      </tbody>
-    </table>
-  `;
-}
-
-function matchesTableVariant(part, variantRequirement) {
-  if (!variantRequirement) {
-    return true;
-  }
-
-  if (!part.requirements) {
-    return true;
-  }
-
-  return Object.entries(variantRequirement).every(([optionId, allowedChoices]) =>
-    Array.isArray(part.requirements[optionId]) &&
-    part.requirements[optionId].some((choice) => allowedChoices.includes(choice))
-  );
-}
-
-function renderRequirementBadge(requirements, variantRequirement) {
-  if (!requirements) {
-    return '<span class="variant-chip">Shared</span>';
-  }
-
-  const [optionId, choices] = Object.entries(requirements)[0] ?? [];
-  if (!optionId || !choices?.length) {
-    return '<span class="variant-chip">Shared</span>';
-  }
-
-  const selected = variantRequirement?.[optionId]?.[0];
-  const label = choices.join(", ");
-  const chip = selected && choices.includes(selected) ? label : `${optionId}: ${label}`;
-  return `<span class="variant-chip">${escapeHtml(chip)}</span>`;
-}
-
-function handleTableInput(event) {
-  const target = event.target;
-  const rowIndex = Number(target.dataset.rowIndex);
-  const field = target.dataset.field;
-  if (Number.isNaN(rowIndex) || !field) {
-    return;
-  }
-
-  const config = parseEditorConfig(true);
-  const rowRef = state.visiblePartRows[rowIndex];
-  if (!config || !rowRef) {
-    return;
-  }
-
-  const section = config.sections.find((item) => item.id === rowRef.sectionId);
-  const part = getCategoryParts(section, rowRef.categoryPath)[rowRef.partIndex];
+function updatePartField(pathKey, index, field, rawValue) {
+  const config = getConfig();
+  const [sectionId, ...path] = parsePathKey(pathKey);
+  const section = config?.sections?.find((item) => item.id === sectionId);
+  const parts = getPartsAtPath(section, path);
+  const part = parts[index];
   if (!part) {
     return;
   }
 
   if (field === "files") {
-    part.files = target.value
+    part.files = rawValue
       .split(",")
       .map((item) => item.trim())
       .filter(Boolean);
   } else if (field === "quantity") {
-    const quantity = parsePositiveQuantity(target.value);
+    const quantity = parsePositiveQuantity(rawValue);
     if (quantity > 1) {
       part.quantity = quantity;
     } else {
       delete part.quantity;
     }
   } else if (field === "notes") {
-    if (target.value.trim()) {
-      part.notes = target.value;
+    if (rawValue.trim()) {
+      part.notes = rawValue;
     } else {
       delete part.notes;
     }
   } else {
-    part[field] = target.value;
+    part[field] = rawValue;
   }
 
-  updateEditorFromConfig(config);
+  updateStateConfig(config, false);
 }
 
-function addPartRow() {
-  const config = parseEditorConfig();
-  const section = getSelectedTableSection();
-  const categoryPath = normalizeCategoryPath(elements.tableCategory.value);
-  if (!config || !section || !categoryPath.length) {
-    elements.adminStatus.textContent = "Choose a section and category before adding a row.";
+function deletePart(pathKey, index) {
+  const config = getConfig();
+  const [sectionId, ...path] = parsePathKey(pathKey);
+  const section = config?.sections?.find((item) => item.id === sectionId);
+  const parts = getPartsAtPath(section, path);
+  if (!parts[index]) {
     return;
   }
 
-  const parts = getOrCreateCategoryParts(section, categoryPath);
-  const nextPart = {
-    id: `new-part-${parts.length + 1}`,
-    name: "New part",
-    files: []
-  };
-
-  const requirement = buildTableRequirement(section);
-  if (requirement) {
-    nextPart.requirements = requirement;
-  }
-
-  parts.push(nextPart);
-  updateEditorFromConfig(config);
-  renderCurrentConfig();
-  elements.adminStatus.textContent = `Added a new part row to ${section.label} / ${categoryPath.join(" / ")}.`;
+  parts.splice(index, 1);
+  updateStateConfig(config);
+  elements.adminStatus.textContent = "Deleted part.";
 }
 
-function deletePartRow(rowIndex) {
-  const config = parseEditorConfig();
-  const rowRef = state.visiblePartRows[rowIndex];
-  if (!config || !rowRef) {
-    return;
-  }
-
-  const section = config.sections.find((item) => item.id === rowRef.sectionId);
-  const parts = getCategoryParts(section, rowRef.categoryPath);
-  if (!parts) {
-    return;
-  }
-
-  parts.splice(rowRef.partIndex, 1);
-  updateEditorFromConfig(config);
-  renderCurrentConfig();
-  elements.adminStatus.textContent = "Deleted part row. Save when ready.";
-}
-
-function buildTableRequirement(section) {
-  const options = section.options ?? [];
-  if (!options.length) {
-    return null;
-  }
-
-  return buildRequirementsFromContainer(elements.tableVariantGroups);
-}
-
-async function saveCurrentConfig() {
-  if (!state.currentConfig) {
-    return;
-  }
-
-  const config = parseEditorConfig();
-  if (!config) {
-    return;
-  }
-
-  const response = await fetch(`/api/admin/droid-types/${encodeURIComponent(state.selectedTypeId)}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(config)
-  });
-
-  const payload = await response.json();
-  if (!response.ok) {
-    elements.adminStatus.textContent = payload.message || "Failed to save config.";
-    return;
-  }
-
+function updateStateConfig(config, rerenderTree = true) {
   state.currentConfig.config = config;
-  renderCurrentConfig();
-  elements.adminStatus.textContent = `Saved ${state.selectedTypeId} at ${payload.updatedAt}.`;
-}
-
-function parseEditorConfigInternal(silent) {
-  try {
-    return JSON.parse(elements.configEditor.value);
-  } catch (error) {
-    if (!silent) {
-      elements.adminStatus.textContent = `JSON error: ${error.message}`;
-    }
-    return null;
+  syncEditorFromState();
+  syncPathInputs();
+  if (rerenderTree) {
+    renderEditTree();
   }
 }
 
-function parseEditorConfig(silent = false) {
-  return parseEditorConfigInternal(silent);
+function getConfig() {
+  return state.currentConfig?.config ?? null;
 }
 
-function updateEditorFromConfig(config) {
-  elements.configEditor.value = `${JSON.stringify(config, null, 2)}\n`;
-  state.currentConfig.config = config;
+function getSelectedEditSection() {
+  return getConfig()?.sections?.find((section) => section.id === elements.editSection.value) ?? null;
 }
 
-function parsePositiveQuantity(value) {
-  const parsed = Number.parseInt(String(value || "").trim(), 10);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
+function getSelectedImportSection() {
+  return getConfig()?.sections?.find((section) => section.id === elements.importSection.value) ?? null;
 }
 
-function getPartQuantityValue(part) {
-  return parsePositiveQuantity(part?.quantity ?? 1);
-}
-
-function buildRequirementsFromContainer(container) {
-  const checkedInputs = Array.from(container.querySelectorAll('input[type="radio"]:checked'));
-  if (!checkedInputs.length) {
-    return null;
-  }
-
-  const requirements = {};
-  checkedInputs.forEach((input) => {
-    const optionId = input.dataset.optionId;
-    if (!optionId) {
-      return;
-    }
-
-    requirements[optionId] = [input.value];
-  });
-
-  return Object.keys(requirements).length ? requirements : null;
-}
-
-function normalizeCategoryPath(value) {
+function normalizePath(value) {
   return String(value || "")
     .split(/\/|>/)
     .map((segment) => segment.trim())
     .filter(Boolean);
 }
 
-function listCategoryLeafPaths(categories, path = []) {
+function listCategoryPaths(categories, path = [], paths = []) {
   if (!categories || typeof categories !== "object") {
-    return [];
+    return paths;
   }
 
-  const entries = [];
-  Object.entries(categories).forEach(([key, value]) => {
-    const nextPath = [...path, key];
-    if (Array.isArray(value)) {
-      entries.push({
-        path: nextPath,
-        display: nextPath.join(" / "),
-        parts: value
-      });
-      return;
-    }
-
-    if (value && typeof value === "object") {
-      entries.push(...listCategoryLeafPaths(value, nextPath));
+  Object.entries(categories).forEach(([name, value]) => {
+    const nextPath = [...path, name];
+    paths.push(nextPath);
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      listCategoryPaths(value, nextPath, paths);
     }
   });
 
-  return entries;
+  return paths;
 }
 
-function getCategoryParts(section, categoryPath) {
-  if (!section || !Array.isArray(categoryPath) || !categoryPath.length) {
-    return [];
-  }
-
-  let node = section.categories ?? {};
-  for (let index = 0; index < categoryPath.length; index += 1) {
-    const segment = categoryPath[index];
-    const value = node?.[segment];
-    if (index === categoryPath.length - 1) {
-      return Array.isArray(value) ? value : [];
-    }
-
-    if (!value || typeof value !== "object" || Array.isArray(value)) {
-      return [];
-    }
-
-    node = value;
-  }
-
-  return [];
-}
-
-function getOrCreateCategoryParts(section, categoryPath) {
+function ensureFolderPath(section, path) {
   section.categories = section.categories || {};
   let node = section.categories;
 
-  categoryPath.forEach((segment, index) => {
-    const isLeaf = index === categoryPath.length - 1;
+  path.forEach((segment, index) => {
+    const isLeaf = index === path.length - 1;
+    if (isLeaf) {
+      if (!node[segment] || Array.isArray(node[segment])) {
+        node[segment] = {};
+      }
+      return;
+    }
+
+    if (!node[segment] || Array.isArray(node[segment])) {
+      node[segment] = {};
+    }
+
+    node = node[segment];
+  });
+}
+
+function getOrCreatePartsArray(section, path) {
+  section.categories = section.categories || {};
+  let node = section.categories;
+
+  path.forEach((segment, index) => {
+    const isLeaf = index === path.length - 1;
     if (isLeaf) {
       if (!Array.isArray(node[segment])) {
         node[segment] = [];
@@ -998,24 +719,68 @@ function getOrCreateCategoryParts(section, categoryPath) {
     node = node[segment];
   });
 
-  return node[categoryPath[categoryPath.length - 1]];
+  return node[path[path.length - 1]];
 }
 
-function iterateCategoryParts(categories, visit) {
-  if (!categories || typeof categories !== "object") {
-    return;
+function getPartsAtPath(section, path) {
+  if (!section || !path.length) {
+    return [];
   }
 
-  Object.values(categories).forEach((value) => {
-    if (Array.isArray(value)) {
-      value.forEach(visit);
-      return;
+  let node = section.categories ?? {};
+  for (let index = 0; index < path.length; index += 1) {
+    const segment = path[index];
+    const value = node?.[segment];
+    if (index === path.length - 1) {
+      return Array.isArray(value) ? value : [];
     }
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+      return [];
+    }
+    node = value;
+  }
 
-    if (value && typeof value === "object") {
-      iterateCategoryParts(value, visit);
-    }
-  });
+  return [];
+}
+
+function countNestedParts(node) {
+  if (Array.isArray(node)) {
+    return node.length;
+  }
+
+  if (!node || typeof node !== "object") {
+    return 0;
+  }
+
+  return Object.values(node).reduce((sum, child) => sum + countNestedParts(child), 0);
+}
+
+function buildPathKey(sectionId, path) {
+  return [sectionId, ...path].join("/");
+}
+
+function parsePathKey(key) {
+  return String(key || "")
+    .split("/")
+    .map((segment) => segment.trim())
+    .filter(Boolean);
+}
+
+function isNodeExpanded(key) {
+  if (!(key in state.expandedNodes)) {
+    state.expandedNodes[key] = true;
+  }
+
+  return state.expandedNodes[key];
+}
+
+function getQuantityValue(part) {
+  return parsePositiveQuantity(part?.quantity ?? 1);
+}
+
+function parsePositiveQuantity(value) {
+  const parsed = Number.parseInt(String(value || "").trim(), 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
 }
 
 function slugify(value) {
@@ -1023,6 +788,12 @@ function slugify(value) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
+}
+
+function titleCase(value) {
+  return String(value || "")
+    .replace(/[-_]+/g, " ")
+    .replace(/\b\w/g, (match) => match.toUpperCase());
 }
 
 function escapeHtml(value) {

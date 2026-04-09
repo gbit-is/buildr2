@@ -359,6 +359,10 @@ async function serveStatic(req, res, requestUrl) {
   }
 
   if (pathname === "/old_admin") {
+    pathname = ADMIN_ENABLED ? "/old_admin.html" : "/index.html";
+  }
+
+  if (pathname === "/admin") {
     pathname = ADMIN_ENABLED ? "/admin.html" : "/index.html";
   }
 

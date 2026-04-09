@@ -8,155 +8,243 @@
   display: block;
 }
 
-.admin-layout {
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 18px;
+.admin-v2-shell {
   margin-top: 18px;
+  min-height: calc(100vh - 150px);
 }
 
-.admin-sidebar,
-.admin-main {
-  min-height: 75vh;
+.admin-v2-workspace {
+  display: grid;
+  gap: 18px;
 }
 
-.admin-main,
-.admin-sidebar,
-.bulk-tools {
+.admin-v2-toolbar {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.admin-v2-field {
+  display: grid;
+  gap: 8px;
+  color: var(--muted);
+  min-width: 0;
+}
+
+.admin-v2-field span {
+  font-size: 0.92rem;
+}
+
+.admin-v2-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.admin-v2-meta {
+  margin: 0;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.admin-tab {
+  min-width: 104px;
+}
+
+.admin-tab.is-active {
+  background: linear-gradient(180deg, #58c6eb 0%, #2d94bf 100%);
+  color: #03131d;
+  border-color: rgba(173, 232, 255, 0.28);
+}
+
+.admin-tab-panel {
   display: grid;
   gap: 16px;
 }
 
-.parts-table-panel {
-  overflow: auto;
+.admin-v2-grid {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 18px;
+  min-height: 0;
+}
+
+.admin-v2-grid-compact {
+  grid-template-columns: 320px minmax(0, 1fr);
+}
+
+.admin-v2-sidebar,
+.admin-v2-main {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+  min-width: 0;
+}
+
+.admin-v2-action-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-v2-textarea-field {
+  min-width: 0;
+}
+
+.admin-tree-panel {
+  display: grid;
+  gap: 8px;
   border-radius: var(--radius-md);
   border: 1px solid rgba(127, 216, 255, 0.14);
   background: linear-gradient(180deg, rgba(20, 42, 58, 0.82), rgba(10, 23, 34, 0.88));
+  padding: 14px;
+  min-height: 460px;
 }
 
-.parts-table {
+.admin-tree-empty {
+  color: var(--muted);
+  text-align: center;
+  padding: 24px;
+}
+
+.admin-tree-group {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-tree-folder-row,
+.admin-tree-part {
   width: 100%;
-  border-collapse: collapse;
-  min-width: 860px;
-}
-
-.parts-table th,
-.parts-table td {
-  padding: 12px;
-  border-bottom: 1px solid rgba(64, 56, 40, 0.08);
-  text-align: left;
-  vertical-align: top;
-}
-
-.parts-table th {
-  font-size: 0.82rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--accent-strong);
-  background: rgba(10, 27, 40, 0.96);
-}
-
-.parts-table td input,
-.parts-table td textarea {
-  width: 100%;
-  border-radius: 12px;
-  border: 1px solid rgba(127, 216, 255, 0.16);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
   padding: 10px 12px;
-  background: rgba(7, 19, 28, 0.88);
+  padding-left: calc(12px + var(--tree-depth, 0) * 20px);
+  border-radius: 12px;
+  border: 1px solid rgba(127, 216, 255, 0.12);
+  background: linear-gradient(180deg, rgba(18, 37, 50, 0.9), rgba(9, 22, 31, 0.92));
+  min-width: 0;
+}
+
+.admin-tree-folder-row {
+  cursor: pointer;
   color: var(--text);
+  text-align: left;
 }
 
-.parts-table td textarea {
-  min-height: 72px;
-  resize: vertical;
+.admin-tree-folder-row:hover,
+.admin-tree-folder-row:focus-visible {
+  border-color: rgba(127, 216, 255, 0.26);
 }
 
-.row-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.variant-chip {
-  display: inline-flex;
-  padding: 5px 9px;
-  border-radius: 999px;
-  background: rgba(74, 180, 217, 0.12);
-  color: var(--accent-strong);
-  font-size: 0.8rem;
-  white-space: nowrap;
-  border: 1px solid rgba(127, 216, 255, 0.14);
-}
-
-.variant-panel {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-}
-
-.variant-label {
-  margin-bottom: 6px;
-  color: var(--muted);
-  font-size: 0.95rem;
-}
-
-.variant-choice-list {
-  display: grid;
-  gap: 8px;
-  padding: 10px;
-  border-radius: var(--radius-md);
-  border: 1px solid rgba(127, 216, 255, 0.12);
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.variant-groups {
-  display: grid;
-  gap: 12px;
-}
-
-.variant-group {
-  padding: 10px;
-  border-radius: var(--radius-md);
-  border: 1px solid rgba(127, 216, 255, 0.12);
-  background: linear-gradient(180deg, rgba(21, 41, 57, 0.78), rgba(12, 24, 36, 0.84));
-}
-
-.variant-group-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
-}
-
-.variant-group-title {
-  color: var(--muted);
-  font-size: 0.92rem;
-}
-
-.variant-choice-line {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 6px 8px;
-  border-radius: 10px;
-}
-
-.variant-choice-select {
+.admin-tree-folder-main,
+.admin-tree-part-main {
   display: flex;
   align-items: center;
   gap: 10px;
   min-width: 0;
+  flex: 1;
 }
 
-.variant-choice-select input {
-  width: auto;
-  margin: 0;
+.admin-tree-toggle,
+.admin-tree-folder-icon,
+.admin-tree-file-icon {
+  color: var(--accent-strong);
+  font-family: "IBM Plex Mono", monospace;
+  flex: 0 0 auto;
 }
 
-.variant-action-button,
-.variant-delete-button {
-  padding: 8px 12px;
+.admin-tree-folder-name,
+.admin-tree-part-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--text);
+}
+
+.admin-tree-folder-count,
+.admin-tree-part-id,
+.admin-tree-path {
+  font-family: "IBM Plex Mono", monospace;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.admin-tree-children {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-tree-part {
+  display: grid;
+}
+
+.admin-tree-part-main {
+  align-items: start;
+}
+
+.admin-tree-part-meta {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.admin-tree-part-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.admin-tree-editor {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+  padding-left: calc(30px + var(--tree-depth, 0) * 20px);
+}
+
+.admin-tree-editor-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.admin-tree-editor textarea,
+.admin-tree-editor input {
+  width: 100%;
+}
+
+.admin-inline-field {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  min-width: 0;
+}
+
+.admin-inline-field span {
+  font-size: 0.82rem;
+}
+
+.config-editor,
+.admin-tree-editor textarea {
+  width: 100%;
+  min-height: 420px;
+  border-radius: 20px;
+  border: 1px solid rgba(127, 216, 255, 0.14);
+  padding: 18px;
+  background: rgba(9, 21, 31, 0.96);
+  color: #f7f0df;
+  font: 14px/1.5 "IBM Plex Mono", monospace;
+  resize: vertical;
+}
+
+.admin-tree-editor textarea {
+  min-height: 92px;
 }
 
 .meta-block {
@@ -168,41 +256,13 @@
   font-size: 0.92rem;
 }
 
-.admin-list {
-  display: grid;
-  gap: 10px;
-}
-
-.admin-list article {
-  padding: 14px 16px;
-  border-radius: var(--radius-md);
-  background: linear-gradient(180deg, rgba(20, 42, 58, 0.82), rgba(10, 23, 34, 0.88));
-  border: 1px solid rgba(127, 216, 255, 0.12);
-}
-
-.config-editor,
-.bulk-tools textarea {
-  width: 100%;
-  min-height: 420px;
-  border-radius: 20px;
-  border: 1px solid rgba(64, 56, 40, 0.14);
-  padding: 18px;
-  background: rgba(24, 28, 31, 0.96);
-  color: #f7f0df;
-  font: 14px/1.5 "IBM Plex Mono", monospace;
-  resize: vertical;
-}
-
-.editor-heading {
-  margin-top: 12px;
-}
-
 @media (max-width: 1080px) {
-  .admin-layout {
+  .admin-v2-grid,
+  .admin-v2-grid-compact {
     grid-template-columns: 1fr;
   }
 
-  .parts-table {
-    min-width: 720px;
+  .admin-tree-editor-grid {
+    grid-template-columns: 1fr;
   }
 }
