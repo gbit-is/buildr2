@@ -556,7 +556,6 @@ function buildImageMapMarkup(type, activeSectionId, sectionProgress) {
   return `
     <div class="droid-image-frame">
       <div class="droid-image-map" style="--image-aspect:${image.width} / ${image.height};">
-        <div class="scan-overlay" aria-hidden="true"></div>
         <img class="droid-photo" src="${escapeHtml(image.src)}" alt="${escapeHtml(image.alt || type.name)}" />
         <svg
           class="droid-hotspots"

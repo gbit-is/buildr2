@@ -483,12 +483,7 @@ select {
 }
 
 .droid-image-frame::before {
-  content: "";
-  position: absolute;
-  inset: 10px;
-  border: 1px dashed rgba(127, 216, 255, 0.16);
-  border-radius: 20px;
-  pointer-events: none;
+  content: none;
 }
 
 .image-axis {
@@ -562,73 +557,7 @@ select {
   display: block;
   border-radius: 28px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.34);
-  border: 1px solid rgba(127, 216, 255, 0.08);
-}
-
-.scan-overlay,
-.reticle {
-  position: absolute;
-  pointer-events: none;
-}
-
-.scan-overlay {
-  inset: 0;
-  background:
-    linear-gradient(180deg, transparent 0%, rgba(127, 216, 255, 0.05) 48%, transparent 100%),
-    repeating-linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.02) 0,
-      rgba(255, 255, 255, 0.02) 1px,
-      transparent 1px,
-      transparent 8px
-    );
-  mix-blend-mode: screen;
-  opacity: 0.55;
-  animation: scanDrift 9s linear infinite;
-  z-index: 1;
-}
-
-.reticle {
-  width: 84px;
-  height: 84px;
-  border: 1px solid rgba(127, 216, 255, 0.16);
-  border-radius: 50%;
-  z-index: 1;
-}
-
-.reticle::before,
-.reticle::after {
-  content: "";
-  position: absolute;
-  background: rgba(127, 216, 255, 0.24);
-}
-
-.reticle::before {
-  top: 50%;
-  left: 12px;
-  right: 12px;
-  height: 1px;
-  transform: translateY(-50%);
-}
-
-.reticle::after {
-  left: 50%;
-  top: 12px;
-  bottom: 12px;
-  width: 1px;
-  transform: translateX(-50%);
-}
-
-.reticle-a {
-  top: 12%;
-  right: 8%;
-}
-
-.reticle-b {
-  bottom: 11%;
-  left: 7%;
-  width: 62px;
-  height: 62px;
+  border: none;
 }
 
 .droid-hotspots {

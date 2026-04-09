@@ -1,3 +1,9 @@
+# DISCLAIMER
+Yes, this is purely "vibe coded". 
+there are no human considerations made for code quality, maintainability, security, etc   
+This is something I wanted, for myself, thought maybe other people might like as well, so I put it up on github / online
+
+
 # Buildr2
 
 Buildr2 is a lightweight website for tracking printed parts while building one or more droids.
