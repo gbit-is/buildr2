@@ -7,7 +7,8 @@ const state = {
   droidTypes: new Map(),
   droids: [],
   activeDroidId: null,
-  activeSectionId: null
+  activeSectionId: null,
+  expandedTreeNodes: {}
 };
 
 const elements = {};
@@ -789,57 +790,22 @@ function renderSectionOptions(section, selectedOptions) {
 }
 
 function renderParts(section, selectedOptions, droid) {
-  const categoryGroups = getVisibleCategoryGroups(section, selectedOptions);
-  if (!categoryGroups.length) {
+  const treeMarkup = renderCategoryTree(section, selectedOptions, droid);
+  if (!treeMarkup) {
     elements.partsPanel.className = "parts-panel empty-state";
     elements.partsPanel.textContent = "No parts match the current options.";
     return;
   }
 
-  const html = categoryGroups
-    .map((group) => {
-      const parts = group.parts;
-      const cards = parts
-        .map((part) => {
-          const quantity = getPartQuantity(part);
-          const printedCount = getPrintedCount(droid, part);
-          const isComplete = printedCount >= quantity;
-          const files = (part.files ?? []).map((file) => `<code>${escapeHtml(file)}</code>`).join("");
-          const checkboxList = Array.from({ length: quantity }, (_, index) => {
-            const checked = index < printedCount ? "checked" : "";
-            return `<input type="checkbox" data-part-id="${part.id}" data-copy-index="${index}" ${checked} />`;
-          }).join("");
-          return `
-            <article class="part-card">
-              <header>
-                <div>
-                  <h4>${escapeHtml(part.name)}</h4>
-                  <div class="meta">${escapeHtml(part.id)}</div>
-                </div>
-                <span class="badge ${isComplete ? "complete" : ""}">${printedCount} / ${quantity} printed</span>
-              </header>
-              ${part.notes ? `<div class="part-notes">${escapeHtml(part.notes)}</div>` : ""}
-              ${files ? `<div class="part-files">${files}</div>` : ""}
-              <div class="checkbox-row">
-                <span>Printed${quantity > 1 ? ` (${quantity} copies)` : ""}</span>
-                <div class="multi-checkboxes">${checkboxList}</div>
-              </div>
-            </article>
-          `;
-        })
-        .join("");
-
-      return `
-        <section class="category-block">
-          <h3>${escapeHtml(group.label)}</h3>
-          ${cards}
-        </section>
-      `;
-    })
-    .join("");
-
   elements.partsPanel.className = "parts-panel";
-  elements.partsPanel.innerHTML = html;
+  elements.partsPanel.innerHTML = `<div class="parts-tree">${treeMarkup}</div>`;
+
+  elements.partsPanel.querySelectorAll("[data-tree-toggle]").forEach((button) => {
+    button.addEventListener("click", () => {
+      toggleTreeNode(section.id, button.dataset.treeToggle);
+      renderParts(section, selectedOptions, droid);
+    });
+  });
 
   elements.partsPanel.querySelectorAll("[data-part-id]").forEach((checkbox) => {
     checkbox.addEventListener("change", async (event) => {
@@ -866,6 +832,123 @@ function renderParts(section, selectedOptions, droid) {
 
 function getVisibleParts(section, selectedOptions) {
   return getVisibleCategoryGroups(section, selectedOptions).flatMap((group) => group.parts);
+}
+
+function renderCategoryTree(section, selectedOptions, droid) {
+  return renderCategoryTreeEntries(section, section.categories, selectedOptions, droid, []);
+}
+
+function renderCategoryTreeEntries(section, categories, selectedOptions, droid, path) {
+  if (!categories || typeof categories !== "object") {
+    return "";
+  }
+
+  return Object.entries(categories)
+    .map(([name, value]) => renderCategoryTreeNode(section, name, value, selectedOptions, droid, [...path, name]))
+    .filter(Boolean)
+    .join("");
+}
+
+function renderCategoryTreeNode(section, name, value, selectedOptions, droid, path) {
+  const depth = Math.max(0, path.length - 1);
+  const nodeKey = path.join("/");
+  const expanded = isTreeNodeExpanded(section.id, nodeKey);
+  const count = getCategoryNodePartCount(value, selectedOptions);
+  if (!count) {
+    return "";
+  }
+
+  if (Array.isArray(value)) {
+    const parts = filterParts(value, selectedOptions);
+    const children = expanded ? parts.map((part) => renderPartTreeRow(part, droid, depth + 1)).join("") : "";
+    return `
+      <section class="tree-node tree-folder ${expanded ? "is-expanded" : ""}" style="--tree-depth:${depth};">
+        <button type="button" class="tree-folder-row" data-tree-toggle="${escapeHtml(nodeKey)}" aria-expanded="${expanded}">
+          <span class="tree-chevron" aria-hidden="true">${expanded ? "▾" : "▸"}</span>
+          <span class="tree-folder-icon" aria-hidden="true">${expanded ? "[-]" : "[+]"}</span>
+          <span class="tree-folder-name">${escapeHtml(titleCase(name))}</span>
+          <span class="tree-folder-count">${count}</span>
+        </button>
+        ${expanded ? `<div class="tree-children">${children}</div>` : ""}
+      </section>
+    `;
+  }
+
+  const childMarkup = renderCategoryTreeEntries(section, value, selectedOptions, droid, path);
+  if (!childMarkup) {
+    return "";
+  }
+
+  return `
+    <section class="tree-node tree-folder ${expanded ? "is-expanded" : ""}" style="--tree-depth:${depth};">
+      <button type="button" class="tree-folder-row" data-tree-toggle="${escapeHtml(nodeKey)}" aria-expanded="${expanded}">
+        <span class="tree-chevron" aria-hidden="true">${expanded ? "▾" : "▸"}</span>
+        <span class="tree-folder-icon" aria-hidden="true">${expanded ? "[-]" : "[+]"}</span>
+        <span class="tree-folder-name">${escapeHtml(titleCase(name))}</span>
+        <span class="tree-folder-count">${count}</span>
+      </button>
+      ${expanded ? `<div class="tree-children">${childMarkup}</div>` : ""}
+    </section>
+  `;
+}
+
+function renderPartTreeRow(part, droid, depth) {
+  const quantity = getPartQuantity(part);
+  const printedCount = getPrintedCount(droid, part);
+  const isComplete = printedCount >= quantity;
+  const files = (part.files ?? [])
+    .map((file) => `<div class="tree-file-path">${escapeHtml(file)}</div>`)
+    .join("");
+  const checkboxList = Array.from({ length: quantity }, (_, index) => {
+    const checked = index < printedCount ? "checked" : "";
+    return `<input type="checkbox" data-part-id="${part.id}" data-copy-index="${index}" ${checked} />`;
+  }).join("");
+
+  return `
+    <article class="tree-part ${isComplete ? "is-complete" : ""}" style="--tree-depth:${depth};">
+      <div class="tree-part-row">
+        <div class="tree-part-heading">
+          <span class="tree-file-icon" aria-hidden="true">[]</span>
+          <div class="tree-part-text">
+            <div class="tree-part-name">${escapeHtml(part.name)}</div>
+            <div class="tree-part-id">${escapeHtml(part.id)}</div>
+          </div>
+        </div>
+        <div class="tree-part-status">
+          <span class="badge ${isComplete ? "complete" : ""}">${printedCount} / ${quantity}</span>
+          <div class="multi-checkboxes">${checkboxList}</div>
+        </div>
+      </div>
+      ${part.notes ? `<div class="tree-part-notes">${escapeHtml(part.notes)}</div>` : ""}
+      ${files ? `<div class="tree-part-files">${files}</div>` : ""}
+    </article>
+  `;
+}
+
+function getCategoryNodePartCount(node, selectedOptions) {
+  if (Array.isArray(node)) {
+    return filterParts(node, selectedOptions).length;
+  }
+
+  if (!node || typeof node !== "object") {
+    return 0;
+  }
+
+  return Object.values(node).reduce((sum, child) => sum + getCategoryNodePartCount(child, selectedOptions), 0);
+}
+
+function isTreeNodeExpanded(sectionId, nodeKey) {
+  const stateKey = `${sectionId}:${nodeKey}`;
+  if (!(stateKey in state.expandedTreeNodes)) {
+    state.expandedTreeNodes[stateKey] = true;
+  }
+
+  return state.expandedTreeNodes[stateKey];
+}
+
+function toggleTreeNode(sectionId, nodeKey) {
+  const stateKey = `${sectionId}:${nodeKey}`;
+  state.expandedTreeNodes[stateKey] = !isTreeNodeExpanded(sectionId, nodeKey);
 }
 
 function getVisibleCategoryGroups(section, selectedOptions) {
