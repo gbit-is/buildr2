@@ -555,26 +555,8 @@ function buildImageMapMarkup(type, activeSectionId, sectionProgress) {
 
   return `
     <div class="droid-image-frame">
-      <div class="image-axis axis-top" aria-hidden="true">
-        <span>000</span>
-        <span>085</span>
-        <span>170</span>
-        <span>255</span>
-        <span>340</span>
-      </div>
-      <div class="image-axis axis-left" aria-hidden="true">
-        <span>000</span>
-        <span>128</span>
-        <span>256</span>
-        <span>384</span>
-        <span>512</span>
-      </div>
-      <div class="frame-chip chip-top-left" aria-hidden="true">ASTROMECH SCHEMA</div>
-      <div class="frame-chip chip-top-right" aria-hidden="true">GRID ACTIVE</div>
       <div class="droid-image-map" style="--image-aspect:${image.width} / ${image.height};">
         <div class="scan-overlay" aria-hidden="true"></div>
-        <div class="reticle reticle-a" aria-hidden="true"></div>
-        <div class="reticle reticle-b" aria-hidden="true"></div>
         <img class="droid-photo" src="${escapeHtml(image.src)}" alt="${escapeHtml(image.alt || type.name)}" />
         <svg
           class="droid-hotspots"
