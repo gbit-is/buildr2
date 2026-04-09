@@ -789,19 +789,16 @@ function renderSectionOptions(section, selectedOptions) {
 }
 
 function renderParts(section, selectedOptions, droid) {
-  const categories = ["main", "greebles"];
-  const html = categories
-    .map((categoryName) => {
-      const parts = filterParts(section.categories?.[categoryName] ?? [], selectedOptions);
-      if (!parts.length) {
-        return `
-          <div class="category-block">
-            <h3>${titleCase(categoryName)}</h3>
-            <div class="empty-state">No parts match the current options.</div>
-          </div>
-        `;
-      }
+  const categoryGroups = getVisibleCategoryGroups(section, selectedOptions);
+  if (!categoryGroups.length) {
+    elements.partsPanel.className = "parts-panel empty-state";
+    elements.partsPanel.textContent = "No parts match the current options.";
+    return;
+  }
 
+  const html = categoryGroups
+    .map((group) => {
+      const parts = group.parts;
       const cards = parts
         .map((part) => {
           const quantity = getPartQuantity(part);
@@ -834,7 +831,7 @@ function renderParts(section, selectedOptions, droid) {
 
       return `
         <section class="category-block">
-          <h3>${titleCase(categoryName)}</h3>
+          <h3>${escapeHtml(group.label)}</h3>
           ${cards}
         </section>
       `;
@@ -847,9 +844,7 @@ function renderParts(section, selectedOptions, droid) {
   elements.partsPanel.querySelectorAll("[data-part-id]").forEach((checkbox) => {
     checkbox.addEventListener("change", async (event) => {
       const partId = event.currentTarget.dataset.partId;
-      const part = [...(section.categories?.main ?? []), ...(section.categories?.greebles ?? [])].find(
-        (item) => item.id === partId
-      );
+      const part = getVisibleParts(section, selectedOptions).find((item) => item.id === partId);
       const quantity = getPartQuantity(part);
       const checkedBoxes = Array.from(
         elements.partsPanel.querySelectorAll(`[data-part-id="${CSS.escape(partId)}"]`)
@@ -870,8 +865,41 @@ function renderParts(section, selectedOptions, droid) {
 }
 
 function getVisibleParts(section, selectedOptions) {
-  const categories = ["main", "greebles"];
-  return categories.flatMap((name) => filterParts(section.categories?.[name] ?? [], selectedOptions));
+  return getVisibleCategoryGroups(section, selectedOptions).flatMap((group) => group.parts);
+}
+
+function getVisibleCategoryGroups(section, selectedOptions) {
+  return flattenCategoryGroups(section.categories)
+    .map((group) => ({
+      ...group,
+      parts: filterParts(group.parts, selectedOptions)
+    }))
+    .filter((group) => group.parts.length > 0);
+}
+
+function flattenCategoryGroups(categories, path = []) {
+  if (!categories || typeof categories !== "object") {
+    return [];
+  }
+
+  const groups = [];
+  Object.entries(categories).forEach(([key, value]) => {
+    const nextPath = [...path, key];
+    if (Array.isArray(value)) {
+      groups.push({
+        path: nextPath,
+        label: nextPath.map(titleCase).join(" / "),
+        parts: value
+      });
+      return;
+    }
+
+    if (value && typeof value === "object") {
+      groups.push(...flattenCategoryGroups(value, nextPath));
+    }
+  });
+
+  return groups;
 }
 
 function filterParts(parts, selectedOptions) {

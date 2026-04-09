@@ -31,6 +31,7 @@ function captureElements() {
   elements.tableVariantPanel = document.querySelector("#tableVariantPanel");
   elements.tableVariantGroups = document.querySelector("#tableVariantGroups");
   elements.tableCategory = document.querySelector("#tableCategory");
+  elements.tableCategoryPaths = document.querySelector("#tableCategoryPaths");
   elements.partsTablePanel = document.querySelector("#partsTablePanel");
   elements.addPartButton = document.querySelector("#addPartButton");
   elements.bulkTools = document.querySelector("#bulkTools");
@@ -38,6 +39,7 @@ function captureElements() {
   elements.bulkVariantPanel = document.querySelector("#bulkVariantPanel");
   elements.bulkVariantGroups = document.querySelector("#bulkVariantGroups");
   elements.bulkCategory = document.querySelector("#bulkCategory");
+  elements.bulkCategoryPaths = document.querySelector("#bulkCategoryPaths");
   elements.bulkParts = document.querySelector("#bulkParts");
   elements.appendPartsButton = document.querySelector("#appendPartsButton");
   elements.configEditor = document.querySelector("#configEditor");
@@ -62,6 +64,7 @@ function bindEvents() {
   });
 
   elements.tableSection.addEventListener("change", () => {
+    renderCategoryInputs();
     renderTableVariantControls();
     renderPartsTable();
   });
@@ -71,6 +74,7 @@ function bindEvents() {
   });
 
   elements.bulkSection.addEventListener("change", () => {
+    renderCategoryInputs();
     renderVariantControls();
   });
 
@@ -274,26 +278,55 @@ function renderCurrentConfig() {
   elements.tableSection.innerHTML = sections
     .map((section) => `<option value="${section.id}">${section.label}</option>`)
     .join("");
+  renderCategoryInputs();
   renderVariantControls();
   renderTableVariantControls();
   renderPartsTable();
 
   elements.sectionSummary.innerHTML = sections
     .map((section) => {
-      const mainCount = section.categories?.main?.length ?? 0;
-      const greebleCount = section.categories?.greebles?.length ?? 0;
+      const categorySummary = listCategoryLeafPaths(section.categories)
+        .map((entry) => `${entry.display}: ${entry.parts.length}`)
+        .join(" • ");
       const optionSummary = (section.options ?? [])
         .map((option) => `${option.label}: ${option.choices.map((choice) => choice.label).join(", ")}`)
         .join(" • ");
       return `
         <article>
           <strong>${escapeHtml(section.label)}</strong>
-          <div class="meta">main: ${mainCount} • greebles: ${greebleCount}</div>
+          <div class="meta">${escapeHtml(categorySummary || "No category paths yet")}</div>
           ${optionSummary ? `<div class="meta">${escapeHtml(optionSummary)}</div>` : ""}
         </article>
       `;
     })
     .join("");
+}
+
+function renderCategoryInputs() {
+  const tableSection = getSelectedTableSection();
+  const bulkSection = getSelectedBulkSection();
+  syncCategoryInput(elements.tableCategory, elements.tableCategoryPaths, tableSection);
+  syncCategoryInput(elements.bulkCategory, elements.bulkCategoryPaths, bulkSection);
+}
+
+function syncCategoryInput(input, datalist, section) {
+  const paths = listCategoryLeafPaths(section?.categories);
+  datalist.innerHTML = paths
+    .map((entry) => `<option value="${escapeHtml(entry.display)}"></option>`)
+    .join("");
+
+  if (!input.value.trim()) {
+    input.value = paths[0]?.display || "main";
+    return;
+  }
+
+  const normalized = normalizeCategoryPath(input.value);
+  if (!normalized.length) {
+    input.value = paths[0]?.display || "main";
+    return;
+  }
+
+  input.value = normalized.join(" / ");
 }
 
 function renderVariantControls() {
@@ -483,23 +516,21 @@ function removeVariantChoiceReferences(config, sectionId, optionId, choiceId) {
     return;
   }
 
-  Object.values(section.categories ?? {}).forEach((parts) => {
-    parts.forEach((part) => {
-      if (!part.requirements?.[optionId]) {
-        return;
-      }
+  iterateCategoryParts(section.categories, (part) => {
+    if (!part.requirements?.[optionId]) {
+      return;
+    }
 
-      const nextChoices = part.requirements[optionId].filter((value) => value !== choiceId);
-      if (nextChoices.length) {
-        part.requirements[optionId] = nextChoices;
-      } else {
-        delete part.requirements[optionId];
-      }
+    const nextChoices = part.requirements[optionId].filter((value) => value !== choiceId);
+    if (nextChoices.length) {
+      part.requirements[optionId] = nextChoices;
+    } else {
+      delete part.requirements[optionId];
+    }
 
-      if (!Object.keys(part.requirements).length) {
-        delete part.requirements;
-      }
-    });
+    if (!Object.keys(part.requirements).length) {
+      delete part.requirements;
+    }
   });
 }
 
@@ -524,13 +555,13 @@ function appendBulkParts() {
   }
 
   const sectionId = elements.bulkSection.value;
-  const category = elements.bulkCategory.value;
+  const categoryPath = normalizeCategoryPath(elements.bulkCategory.value);
   const lines = elements.bulkParts.value
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean);
 
-  if (!sectionId || !category || !lines.length) {
+  if (!sectionId || !categoryPath.length || !lines.length) {
     elements.adminStatus.textContent = "Choose a section and paste at least one part line.";
     return;
   }
@@ -541,8 +572,7 @@ function appendBulkParts() {
     return;
   }
 
-  section.categories = section.categories || {};
-  section.categories[category] = section.categories[category] || [];
+  const parts = getOrCreateCategoryParts(section, categoryPath);
   const bulkRequirement = buildBulkRequirement(section);
 
   lines.forEach((line) => {
@@ -579,14 +609,14 @@ function appendBulkParts() {
       nextPart.requirements = bulkRequirement;
     }
 
-    section.categories[category].push(nextPart);
+    parts.push(nextPart);
   });
 
   elements.configEditor.value = `${JSON.stringify(config, null, 2)}\n`;
   elements.bulkParts.value = "";
   state.currentConfig.config = config;
   renderCurrentConfig();
-  elements.adminStatus.textContent = `Added ${lines.length} part line(s) to ${section.label} / ${category}. Save when ready.`;
+  elements.adminStatus.textContent = `Added ${lines.length} part line(s) to ${section.label} / ${categoryPath.join(" / ")}. Save when ready.`;
 }
 
 function buildBulkRequirement(section) {
@@ -619,7 +649,7 @@ function getSelectedTableSection() {
 function renderPartsTable() {
   const config = parseEditorConfig(true);
   const section = getSelectedTableSection();
-  const category = elements.tableCategory.value;
+  const categoryPath = normalizeCategoryPath(elements.tableCategory.value);
   state.visiblePartRows = [];
 
   if (!config || !section) {
@@ -627,7 +657,12 @@ function renderPartsTable() {
     return;
   }
 
-  const parts = section.categories?.[category] ?? [];
+  if (!categoryPath.length) {
+    elements.partsTablePanel.innerHTML = '<div class="empty-state">Enter a category path like "main" or "greebles / psis".</div>';
+    return;
+  }
+
+  const parts = getCategoryParts(section, categoryPath);
   const variantRequirement = buildTableRequirement(section);
   const rows = [];
 
@@ -638,7 +673,7 @@ function renderPartsTable() {
 
     state.visiblePartRows.push({
       sectionId: section.id,
-      category,
+      categoryPath,
       partIndex: index
     });
 
@@ -726,7 +761,7 @@ function handleTableInput(event) {
   }
 
   const section = config.sections.find((item) => item.id === rowRef.sectionId);
-  const part = section?.categories?.[rowRef.category]?.[rowRef.partIndex];
+  const part = getCategoryParts(section, rowRef.categoryPath)[rowRef.partIndex];
   if (!part) {
     return;
   }
@@ -759,16 +794,15 @@ function handleTableInput(event) {
 function addPartRow() {
   const config = parseEditorConfig();
   const section = getSelectedTableSection();
-  const category = elements.tableCategory.value;
-  if (!config || !section || !category) {
+  const categoryPath = normalizeCategoryPath(elements.tableCategory.value);
+  if (!config || !section || !categoryPath.length) {
     elements.adminStatus.textContent = "Choose a section and category before adding a row.";
     return;
   }
 
-  section.categories = section.categories || {};
-  section.categories[category] = section.categories[category] || [];
+  const parts = getOrCreateCategoryParts(section, categoryPath);
   const nextPart = {
-    id: `new-part-${section.categories[category].length + 1}`,
+    id: `new-part-${parts.length + 1}`,
     name: "New part",
     files: []
   };
@@ -778,10 +812,10 @@ function addPartRow() {
     nextPart.requirements = requirement;
   }
 
-  section.categories[category].push(nextPart);
+  parts.push(nextPart);
   updateEditorFromConfig(config);
   renderCurrentConfig();
-  elements.adminStatus.textContent = `Added a new part row to ${section.label} / ${category}.`;
+  elements.adminStatus.textContent = `Added a new part row to ${section.label} / ${categoryPath.join(" / ")}.`;
 }
 
 function deletePartRow(rowIndex) {
@@ -792,7 +826,7 @@ function deletePartRow(rowIndex) {
   }
 
   const section = config.sections.find((item) => item.id === rowRef.sectionId);
-  const parts = section?.categories?.[rowRef.category];
+  const parts = getCategoryParts(section, rowRef.categoryPath);
   if (!parts) {
     return;
   }
@@ -887,6 +921,101 @@ function buildRequirementsFromContainer(container) {
   });
 
   return Object.keys(requirements).length ? requirements : null;
+}
+
+function normalizeCategoryPath(value) {
+  return String(value || "")
+    .split(/\/|>/)
+    .map((segment) => segment.trim())
+    .filter(Boolean);
+}
+
+function listCategoryLeafPaths(categories, path = []) {
+  if (!categories || typeof categories !== "object") {
+    return [];
+  }
+
+  const entries = [];
+  Object.entries(categories).forEach(([key, value]) => {
+    const nextPath = [...path, key];
+    if (Array.isArray(value)) {
+      entries.push({
+        path: nextPath,
+        display: nextPath.join(" / "),
+        parts: value
+      });
+      return;
+    }
+
+    if (value && typeof value === "object") {
+      entries.push(...listCategoryLeafPaths(value, nextPath));
+    }
+  });
+
+  return entries;
+}
+
+function getCategoryParts(section, categoryPath) {
+  if (!section || !Array.isArray(categoryPath) || !categoryPath.length) {
+    return [];
+  }
+
+  let node = section.categories ?? {};
+  for (let index = 0; index < categoryPath.length; index += 1) {
+    const segment = categoryPath[index];
+    const value = node?.[segment];
+    if (index === categoryPath.length - 1) {
+      return Array.isArray(value) ? value : [];
+    }
+
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+      return [];
+    }
+
+    node = value;
+  }
+
+  return [];
+}
+
+function getOrCreateCategoryParts(section, categoryPath) {
+  section.categories = section.categories || {};
+  let node = section.categories;
+
+  categoryPath.forEach((segment, index) => {
+    const isLeaf = index === categoryPath.length - 1;
+    if (isLeaf) {
+      if (!Array.isArray(node[segment])) {
+        node[segment] = [];
+      }
+      return;
+    }
+
+    if (!node[segment] || typeof node[segment] !== "object" || Array.isArray(node[segment])) {
+      node[segment] = {};
+    }
+
+    node = node[segment];
+  });
+
+  return node[categoryPath[categoryPath.length - 1]];
+}
+
+function iterateCategoryParts(categories, visit) {
+  if (!categories || typeof categories !== "object") {
+    return;
+  }
+
+  Object.values(categories).forEach((value) => {
+    if (Array.isArray(value)) {
+      value.forEach(visit);
+      return;
+    }
+
+    if (value && typeof value === "object") {
+      iterateCategoryParts(value, visit);
+    }
+  });
 }
 
 function slugify(value) {

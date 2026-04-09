@@ -243,9 +243,37 @@ The main app now verifies Google credentials on the server and stores signed-in 
    - `visual.image`
    - `visual.hotspots`
    - `sections`
-   - `categories.main`
-   - `categories.greebles`
+   - `categories` as a tree of category groups
    - optional `options`
+
+Category groups can now be nested. Each leaf category holds an array of parts. For example:
+
+```json
+{
+  "id": "dome",
+  "label": "Dome",
+  "categories": {
+    "main": [
+      {
+        "id": "dome-frame",
+        "name": "Dome frame",
+        "files": ["dome/frame.stl"]
+      }
+    ],
+    "greebles": {
+      "psis": [
+        {
+          "id": "left-psi",
+          "name": "Left PSI",
+          "files": ["dome/psis/left.stl"]
+        }
+      ]
+    }
+  }
+}
+```
+
+The app still supports the older flat layout where `categories.main` and `categories.greebles` are direct arrays.
 
 Example image selector config:
 

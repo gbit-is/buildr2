@@ -75,11 +75,9 @@
               </div>
             </div>
             <label>
-              Category
-              <select id="tableCategory">
-                <option value="main">Main</option>
-                <option value="greebles">Greebles</option>
-              </select>
+              Category path
+              <input id="tableCategory" list="tableCategoryPaths" placeholder="main or greebles / psis" />
+              <datalist id="tableCategoryPaths"></datalist>
             </label>
             <div id="partsTablePanel" class="parts-table-panel"></div>
           </div>
@@ -104,11 +102,9 @@
               </div>
             </div>
             <label>
-              Category
-              <select id="bulkCategory">
-                <option value="main">Main</option>
-                <option value="greebles">Greebles</option>
-              </select>
+              Category path
+              <input id="bulkCategory" list="bulkCategoryPaths" placeholder="main or greebles / psis" />
+              <datalist id="bulkCategoryPaths"></datalist>
             </label>
             <label>
               Paste parts

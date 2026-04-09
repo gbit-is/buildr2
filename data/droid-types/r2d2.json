@@ -978,7 +978,26 @@
       "id": "right-leg",
       "label": "Right Leg",
       "categories": {
-        "main": [],
+        "main": {
+          "upper leg": [
+            {
+              "id": "right-leg-upper-placeholder",
+              "name": "Right Leg Upper Placeholder",
+              "files": [
+                "right-leg/upper-leg/placeholder-upper.stl"
+              ]
+            }
+          ],
+          "lower leg": [
+            {
+              "id": "right-leg-lower-placeholder",
+              "name": "Right Leg Lower Placeholder",
+              "files": [
+                "right-leg/lower-leg/placeholder-lower.stl"
+              ]
+            }
+          ]
+        },
         "greebles": []
       }
     },
